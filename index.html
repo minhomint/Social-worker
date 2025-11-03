@@ -3,1271 +3,851 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사회복지사 1급 3교시 기출문제 분석 v2.0</title>
+    <title>사회복지사 1급 - 최종 완성 플랫폼</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --light: #f5f7fa;
+            --dark: #2d3748;
+            --text: #333;
+            --border: #e2e8f0;
+            --green: #48bb78;
+            --red: #f56565;
+            --yellow: #ed8936;
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK KR", sans-serif;
+            background: var(--light);
+            color: var(--text);
             line-height: 1.6;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
+        
+        body.dark-mode {
+            background: #1a202c;
+            color: #e2e8f0;
+            --text: #e2e8f0;
+            --light: #2d3748;
         }
-
-        header {
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 { font-size: 1.3em; font-weight: 700; }
+        .subtitle { font-size: 0.8em; opacity: 0.9; margin-left: 10px; }
+        
+        .header-controls { display: flex; gap: 15px; align-items: center; }
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        .control-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        .main-wrapper {
+            display: flex;
+            margin-top: 70px;
+            min-height: calc(100vh - 70px);
+        }
+        
+        .sidebar {
+            width: 300px;
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            text-align: center;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px 0;
+            position: fixed;
+            left: 0;
+            top: 70px;
+            height: calc(100vh - 70px);
+            z-index: 500;
         }
-
-        header h1 {
-            color: #667eea;
-            font-size: 2.5em;
+        
+        body.dark-mode .sidebar { background: #2d3748; }
+        
+        .section-title {
+            padding: 15px 20px;
+            font-weight: 800;
+            font-size: 0.9em;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.95em;
+        }
+        
+        .menu-item:hover { background: var(--light); border-left-color: var(--primary); padding-left: 24px; }
+        .menu-item.active { 
+            background: rgba(102, 126, 234, 0.15);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .content-area {
+            margin-left: 300px;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .page-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 10px;
         }
-
-        header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
+        
+        .page-subtitle {
+            color: #718096;
             margin-bottom: 30px;
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            font-size: 0.95em;
         }
-
-        .tab-button {
-            padding: 12px 25px;
-            border: none;
-            background: #f0f0f0;
-            color: #333;
+        
+        .unit-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .unit-card { background: #2d3748; }
+        
+        .card-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
             cursor: pointer;
-            border-radius: 5px;
-            font-size: 1em;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
         }
-
-        .tab-button.active {
-            background: #667eea;
-            color: white;
+        
+        .card-title { font-size: 1.15em; font-weight: 700; color: var(--primary); }
+        .badge { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 700; }
+        .card-toggle { font-size: 1.3em; color: var(--primary); transition: transform 0.3s; }
+        .card-toggle.collapsed { transform: rotate(-90deg); }
+        
+        .card-content { padding: 25px; display: none; }
+        .card-content.show { display: block; }
+        
+        .concept-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
         }
-
-        .tab-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        
+        body.dark-mode .concept-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
         }
-
-        .tab-content {
+        
+        .concept-title { font-weight: 700; color: var(--primary); margin-bottom: 12px; font-size: 1.05em; }
+        .concept-content { font-size: 0.95em; line-height: 1.8; }
+        .concept-content ul { list-style: none; padding-left: 20px; margin: 10px 0; }
+        .concept-content li:before { content: "▹"; position: absolute; margin-left: -16px; color: var(--primary); font-weight: 700; }
+        
+        .problems-section { margin-top: 20px; }
+        .problems-title { font-weight: 700; color: var(--primary); margin-bottom: 15px; font-size: 1em; }
+        
+        .problem-item {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        body.dark-mode .problem-item { background: #3a3f5a; border-color: #4a5568; }
+        .problem-item:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(4px);
+        }
+        
+        .problem-info { flex: 1; }
+        .problem-year-badge { background: var(--primary); color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.8em; font-weight: 700; white-space: nowrap; display: inline-block; margin-right: 8px; }
+        .problem-text { margin-top: 6px; font-size: 0.9em; color: var(--text); }
+        .problem-arrow { color: #cbd5e0; font-size: 1.2em; }
+        .problem-item:hover .problem-arrow { color: var(--primary); transform: translateX(4px); }
+        
+        .modal {
             display: none;
-            animation: fadeIn 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
         }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .card {
+        
+        .modal.active { display: flex; }
+        .modal-content {
             background: white;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
-        }
-
-        .card h3 {
-            color: #764ba2;
-            margin-top: 20px;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        table {
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 750px;
             width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-
-        thead {
-            background: #667eea;
-            color: white;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        tbody tr:hover {
-            background: #f5f5f5;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        .stat-box {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            margin: 10px 10px 10px 0;
-            text-align: center;
-        }
-
-        .stat-box .number {
-            font-size: 2.5em;
-            font-weight: bold;
-        }
-
-        .stat-box .label {
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        .chart-bar {
+        
+        body.dark-mode .modal-content { background: #2d3748; }
+        
+        .modal-header {
             display: flex;
-            align-items: center;
-            margin: 15px 0;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
         }
-
-        .chart-label {
-            width: 150px;
-            font-weight: 600;
-        }
-
-        .chart-bar-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            height: 30px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .rank-badge {
-            display: inline-block;
+        
+        .modal-title { font-size: 1.3em; font-weight: 700; color: var(--primary); flex: 1; }
+        .modal-meta { font-size: 0.85em; color: #718096; margin-top: 8px; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #718096;
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
-            font-weight: bold;
-            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .difficulty {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-
-        .difficulty.easy {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .difficulty.medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .difficulty.hard {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .subject-tag {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .subject-tag.policy {
-            background: #e7f3ff;
-            color: #0066cc;
-        }
-
-        .subject-tag.admin {
-            background: #fff3e0;
-            color: #e65100;
-        }
-
-        .subject-tag.law {
-            background: #f3e5f5;
-            color: #6a1b9a;
-        }
-
-        .yearly-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-left: 5px solid #667eea;
-            border-radius: 5px;
-        }
-
-        .yearly-section h4 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .yearly-section ul {
-            margin-left: 20px;
-        }
-
-        .yearly-section li {
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .topic-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .topic-item {
-            background: #f5f5f5;
-            padding: 15px;
+        
+        .problem-statement {
+            background: var(--light);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-
-        .topic-item strong {
-            color: #667eea;
-        }
-
-        .strategy-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 18px;
             margin: 20px 0;
+            font-size: 0.95em;
+            line-height: 1.7;
         }
-
-        .strategy-box h4 {
-            margin-bottom: 15px;
-            font-size: 1.2em;
-        }
-
-        .strategy-box ol {
-            margin-left: 20px;
-        }
-
-        .strategy-box li {
-            margin-bottom: 10px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: white;
-            margin-top: 40px;
-        }
-
-        .print-button {
-            background: #667eea;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
+        
+        body.dark-mode .problem-statement { background: #3a3f5a; }
+        
+        .choices { display: flex; flex-direction: column; gap: 12px; margin: 25px 0; }
+        .choice {
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 1em;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        body.dark-mode .choice { background: #3a3f5a; }
+        .choice:hover { border-color: var(--primary); background: rgba(102, 126, 234, 0.05); transform: translateX(4px); }
+        .choice.selected { border-color: var(--green); background: rgba(72, 187, 120, 0.1); font-weight: 600; }
+        
+        .answer-section {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(72, 187, 120, 0.05));
+            border: 2px solid var(--green);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 25px;
+            display: none;
+        }
+        
+        body.dark-mode .answer-section { background: linear-gradient(135deg, rgba(72, 187, 120, 0.15), rgba(72, 187, 120, 0.1)); }
+        .answer-section.show { display: block; }
+        .answer-label { font-weight: 700; color: var(--green); margin-bottom: 12px; }
+        .answer-content { color: var(--text); line-height: 1.7; margin-bottom: 18px; }
+        
+        .wrong-answers {
+            background: rgba(245, 101, 101, 0.08);
+            border-left: 4px solid var(--red);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .wrong-label { font-weight: 700; color: var(--red); margin-bottom: 10px; }
+        .wrong-item { font-size: 0.9em; padding: 6px 0; color: var(--text); }
+        
+        .memo-btn {
+            background: var(--yellow);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
             font-weight: 600;
-            float: right;
-            transition: all 0.3s ease;
+            margin-top: 5px;
+            font-size: 0.9em;
         }
-
-        .print-button:hover {
-            background: #764ba2;
-            transform: translateY(-2px);
+        
+        .memo-btn:hover { opacity: 0.9; }
+        
+        .problem-memo {
+            background: #fffbeb;
+            border: 1px solid rgba(237, 137, 54, 0.3);
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            display: none;
         }
-
-        @media print {
-            body {
-                background: white;
-            }
-            .tabs, .print-button {
-                display: none;
-            }
-            .card {
-                page-break-inside: avoid;
-            }
+        
+        body.dark-mode .problem-memo { background: rgba(237, 137, 54, 0.1); }
+        .problem-memo.show { display: block; }
+        .problem-memo textarea {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid var(--yellow);
+            border-radius: 4px;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 0.9em;
+            background: white;
+            color: var(--text);
         }
-
+        
+        body.dark-mode .problem-memo textarea { background: #3a3f5a; border-color: #ed8936; color: white; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 25px; }
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover { background: var(--secondary); transform: translateY(-2px); }
+        .btn-secondary { background: #cbd5e0; color: var(--text); }
+        
+        .success-msg {
+            color: var(--green);
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-msg.show { display: block; }
+        
         @media (max-width: 768px) {
-            .tabs {
-                flex-direction: column;
-            }
-            header h1 {
-                font-size: 1.8em;
-            }
-            .stat-box {
-                display: block;
-                margin: 10px 0;
-            }
+            .sidebar { width: 100%; max-height: 0; overflow: hidden; transition: max-height 0.3s; }
+            .sidebar.open { max-height: 70vh; overflow-y: auto; }
+            .content-area { margin-left: 0; padding: 20px; }
+            .modal-content { padding: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header>
-            <h1>📊 사회복지사 1급 3교시</h1>
-            <p>2018~2021년 기출문제 종합 분석 v2.0</p>
-            <button class="print-button" onclick="window.print()">🖨️ 인쇄</button>
-        </header>
-
-        <!-- Tab Navigation -->
-        <div class="tabs">
-            <button class="tab-button active" onclick="switchTab(event, 'overview')">📈 개요</button>
-            <button class="tab-button" onclick="switchTab(event, 'subject1')">📚 1과목: 정책론</button>
-            <button class="tab-button" onclick="switchTab(event, 'subject2')">🏢 2과목: 행정론</button>
-            <button class="tab-button" onclick="switchTab(event, 'subject3')">⚖️ 3과목: 법제론</button>
-            <button class="tab-button" onclick="switchTab(event, 'strategy')">🎯 전략</button>
+    <header class="header">
+        <h1>📚 사회복지사 1급<span class="subtitle">2018·2019·2020·2021 완전정리</span></h1>
+        <div class="header-controls">
+            <button class="control-btn" id="darkToggle">🌙 다크모드</button>
         </div>
+    </header>
 
-        <!-- 1. Overview Tab -->
-        <div id="overview" class="tab-content active">
-            <div class="card">
-                <h2>📊 전체 통계</h2>
-                
-                <div style="margin: 30px 0;">
-                    <div class="stat-box">
-                        <div class="number">300</div>
-                        <div class="label">총 출제 문제</div>
+    <div class="main-wrapper">
+        <aside class="sidebar" id="sidebar">
+            <div class="section-title">1️⃣ 1교시</div>
+            <div class="menu-item active" onclick="switchContent('subject-1-1', this)">📖 인간행동과사회환경</div>
+            <div class="menu-item" onclick="switchContent('subject-1-2', this)">📋 사회복지조사론</div>
+            
+            <div class="section-title">2️⃣ 2교시</div>
+            <div class="menu-item" onclick="switchContent('subject-2-1', this)">🎯 사회복지실천론</div>
+            <div class="menu-item" onclick="switchContent('subject-2-2', this)">✋ 사회복지실천기술론</div>
+            <div class="menu-item" onclick="switchContent('subject-2-3', this)">🌍 지역사회복지론</div>
+            
+            <div class="section-title">3️⃣ 3교시</div>
+            <div class="menu-item" onclick="switchContent('subject-3-1', this)">💼 사회복지정책론</div>
+            <div class="menu-item" onclick="switchContent('subject-3-2', this)">🏢 사회복지행정론</div>
+            <div class="menu-item" onclick="switchContent('subject-3-3', this)">⚖️ 사회복지법제론</div>
+            
+            <div class="section-title">🎓 시험 및 도구</div>
+            <div class="menu-item" onclick="switchContent('test-mode', this)">🎯 시험모드</div>
+            <div class="menu-item" onclick="switchContent('memo-pad', this)">📝 메모장</div>
+        </aside>
+
+        <main class="content-area" id="contentArea">
+            <!-- 1교시 - 인간행동과사회환경 -->
+            <div id="subject-1-1" class="tab-content active">
+                <div class="page-title">📖 인간행동과 사회환경</div>
+                <div class="page-subtitle">2018·2019·2020·2021 기출문제 완전정리</div>
+                <div id="content-1-1"></div>
+            </div>
+
+            <!-- 1교시 - 사회복지조사론 -->
+            <div id="subject-1-2" class="tab-content">
+                <div class="page-title">📋 사회복지조사론</div>
+                <div class="page-subtitle">2018·2019·2020·2021 기출문제 완전정리</div>
+                <div id="content-1-2"></div>
+            </div>
+
+            <!-- 2교시 - 준비중 -->
+            <div id="subject-2-1" class="tab-content">
+                <div class="page-title">🎯 사회복지실천론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
                     </div>
-                    <div class="stat-box">
-                        <div class="number">4</div>
-                        <div class="label">분석 연도</div>
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
                     </div>
-                    <div class="stat-box">
-                        <div class="number">3</div>
-                        <div class="label">과목 수</div>
-                    </div>
-                </div>
-
-                <h3>연도별 문제 분포</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>연도</th>
-                            <th>1과목</th>
-                            <th>2과목</th>
-                            <th>3과목</th>
-                            <th>합계</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>2018년</strong></td>
-                            <td>20문</td>
-                            <td>20문</td>
-                            <td>35문</td>
-                            <td><strong>75문</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>2019년</strong></td>
-                            <td>20문</td>
-                            <td>20문</td>
-                            <td>35문</td>
-                            <td><strong>75문</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>2020년</strong></td>
-                            <td>20문</td>
-                            <td>20문</td>
-                            <td>35문</td>
-                            <td><strong>75문</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>2021년</strong></td>
-                            <td>20문</td>
-                            <td>20문</td>
-                            <td>35문</td>
-                            <td><strong>75문</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>과목별 문제 분포</h3>
-                <div class="chart-bar">
-                    <div class="chart-label">1과목 (정책론)</div>
-                    <div class="chart-bar-fill" style="width: 26.7%;">80문</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">2과목 (행정론)</div>
-                    <div class="chart-bar-fill" style="width: 26.7%;">80문</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">3과목 (법제론)</div>
-                    <div class="chart-bar-fill" style="width: 46.7%;">140문</div>
-                </div>
-
-                <h3>난이도 분포</h3>
-                <div class="chart-bar">
-                    <div class="chart-label">⭐ (쉬움)</div>
-                    <div class="chart-bar-fill" style="width: 30%;">30%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">⭐⭐ (중간)</div>
-                    <div class="chart-bar-fill" style="width: 50%;">50%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">⭐⭐⭐ (어려움)</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>📋 반드시 출제되는 주제</h2>
-                <div style="background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong style="color: #0066cc;">✅ 1과목: 사회복지정책론</strong>
-                    <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>복지국가 발달이론</li>
-                        <li>에스핑-앤더슨 복지국가 유형</li>
-                        <li>사회보험 vs 공공부조</li>
-                        <li>빈곤/불평등 측정</li>
-                    </ul>
-                </div>
-
-                <div style="background: #fff3e0; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong style="color: #e65100;">✅ 2과목: 사회복지행정론</strong>
-                    <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>리더십이론</li>
-                        <li>조직이론 및 관료제</li>
-                        <li>예산/재정관리</li>
-                        <li>인적자원관리</li>
-                    </ul>
-                </div>
-
-                <div style="background: #f3e5f5; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                    <strong style="color: #6a1b9a;">✅ 3과목: 사회복지법제론</strong>
-                    <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>국민기초생활보장법</li>
-                        <li>사회보험법 4대 (연금, 건강, 고용, 산재)</li>
-                        <li>사회보장기본법</li>
-                        <li>각 법의 급여 조건 및 대상</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Subject 1 Tab -->
-        <div id="subject1" class="tab-content">
-            <div class="card">
-                <h2>📚 1과목: 사회복지정책론 (80문)</h2>
-                
-                <h3>🎯 주요 출제 주제</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>주제</th>
-                            <th>2018</th>
-                            <th>2019</th>
-                            <th>2020</th>
-                            <th>2021</th>
-                            <th>빈도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>사회복지정책 기초이론</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>복지국가 유형/발달이론</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>빈곤·불평등 측정</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>사회보험제도</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>공공부조</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>사회수당</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>-</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">3회</td>
-                        </tr>
-                        <tr>
-                            <td><strong>민영화/정책평가</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag policy">매년</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>📅 연도별 출제 경향</h3>
-
-                <div class="yearly-section">
-                    <h4>2018년</h4>
-                    <ul>
-                        <li>정책목표-수단 연결 (형평, 적절성, 자유)</li>
-                        <li>복지국가 유형 (에스핑-앤더슨)</li>
-                        <li>사회복지 재원 구조 (조세, 보험료)</li>
-                        <li>증서(voucher)의 특성</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2019년</h4>
-                    <ul>
-                        <li>사회보장제도 운영주체의 책임</li>
-                        <li>빈곤 개념 (절대적/상대적)</li>
-                        <li>킹돈의 쓰레기통 모형</li>
-                        <li>케인즈 경제이론</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2020년</h4>
-                    <ul>
-                        <li>사회복지역사 (신빈민법, 베버리지)</li>
-                        <li>새로운 사회적 위험(new social risk)</li>
-                        <li>사회보험 vs 민간보험 비교</li>
-                        <li>이용료(본인부담금) 부과 방식</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2021년</h4>
-                    <ul>
-                        <li>사회복지정책 원칙과 기능</li>
-                        <li>에스핑-앤더슨 복지국가 유형</li>
-                        <li>소득재분배 방식</li>
-                        <li>정책 수급조건 (자산조사, 기여)</li>
-                    </ul>
-                </div>
-
-                <h3>🔝 핵심 주제 순위</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>순위</th>
-                            <th>주제</th>
-                            <th>출제횟수</th>
-                            <th>난이도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="rank-badge">1</span></td>
-                            <td><strong>복지국가 발달이론</strong></td>
-                            <td>8회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">2</span></td>
-                            <td><strong>사회보험 vs 공공부조</strong></td>
-                            <td>7회</td>
-                            <td><span class="difficulty hard">⭐⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">3</span></td>
-                            <td><strong>빈곤/불평등 측정</strong></td>
-                            <td>7회</td>
-                            <td><span class="difficulty hard">⭐⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">4</span></td>
-                            <td><strong>정책대상/급여형태</strong></td>
-                            <td>6회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">5</span></td>
-                            <td><strong>사회복지정책 가치</strong></td>
-                            <td>5회</td>
-                            <td><span class="difficulty easy">⭐</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>💡 정답 분포</h3>
-                <div class="chart-bar">
-                    <div class="chart-label">① 번</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">② 번</div>
-                    <div class="chart-bar-fill" style="width: 25%;">25%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">③ 번</div>
-                    <div class="chart-bar-fill" style="width: 25%;">25%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">④ 번</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">⑤ 번</div>
-                    <div class="chart-bar-fill" style="width: 10%;">10%</div>
-                </div>
-                <p style="margin-top: 10px; color: #666; font-size: 0.9em;"><strong>특징:</strong> ②③④번이 자주 정답 (약 70%)</p>
-            </div>
-        </div>
-
-        <!-- 3. Subject 2 Tab -->
-        <div id="subject2" class="tab-content">
-            <div class="card">
-                <h2>🏢 2과목: 사회복지행정론 (80문)</h2>
-
-                <h3>🎯 주요 출제 주제</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>주제</th>
-                            <th>2018</th>
-                            <th>2019</th>
-                            <th>2020</th>
-                            <th>2021</th>
-                            <th>빈도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>조직이론/관료제</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>리더십이론</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>행정 기능</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>예산/재정</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>인적자원관리</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>전달체계</strong></td>
-                            <td>✓</td>
-                            <td>-</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">3회</td>
-                        </tr>
-                        <tr>
-                            <td><strong>기획/평가</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag admin">매년</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>📅 연도별 출제 경향</h3>
-
-                <div class="yearly-section">
-                    <h4>2018년</h4>
-                    <ul>
-                        <li>베버(Max Weber) 관료제이론</li>
-                        <li>조직환경 대응전략</li>
-                        <li>총체적 품질관리(TQM)</li>
-                        <li>리더십 유형별 특성</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2019년</h4>
-                    <ul>
-                        <li>행렬조직(Matrix Organization)</li>
-                        <li>동기부여이론 (Maslow, Herzberg, ERG)</li>
-                        <li>직무분석과 직무평가</li>
-                        <li>리더십 상황이론</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2020년</h4>
-                    <ul>
-                        <li>정치경제이론(Political Economy)</li>
-                        <li>총체적 품질관리(TQM)</li>
-                        <li>기획기법 (Gantt Chart, PERT)</li>
-                        <li>변혁적 리더십</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2021년</h4>
-                    <ul>
-                        <li>상황이론 리더십</li>
-                        <li>과학적 관리론(Scientific Management)</li>
-                        <li>예산 관련 이론들</li>
-                        <li>조직구조와 조직문화</li>
-                    </ul>
-                </div>
-
-                <h3>🔝 핵심 주제 순위</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>순위</th>
-                            <th>주제</th>
-                            <th>출제횟수</th>
-                            <th>난이도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="rank-badge">1</span></td>
-                            <td><strong>리더십이론</strong></td>
-                            <td>8회</td>
-                            <td><span class="difficulty hard">⭐⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">2</span></td>
-                            <td><strong>조직이론</strong></td>
-                            <td>7회</td>
-                            <td><span class="difficulty hard">⭐⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">3</span></td>
-                            <td><strong>예산/재정관리</strong></td>
-                            <td>6회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">4</span></td>
-                            <td><strong>기획/평가</strong></td>
-                            <td>6회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">5</span></td>
-                            <td><strong>인사관리</strong></td>
-                            <td>5회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>💡 정답 분포</h3>
-                <div class="chart-bar">
-                    <div class="chart-label">① 번</div>
-                    <div class="chart-bar-fill" style="width: 22%;">22%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">② 번</div>
-                    <div class="chart-bar-fill" style="width: 24%;">24%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">③ 번</div>
-                    <div class="chart-bar-fill" style="width: 16%;">16%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">④ 번</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">⑤ 번</div>
-                    <div class="chart-bar-fill" style="width: 18%;">18%</div>
-                </div>
-                <p style="margin-top: 10px; color: #666; font-size: 0.9em;"><strong>특징:</strong> ①②④⑤번이 비교적 균등 (약 84%)</p>
-            </div>
-        </div>
-
-        <!-- 4. Subject 3 Tab -->
-        <div id="subject3" class="tab-content">
-            <div class="card">
-                <h2>⚖️ 3과목: 사회복지법제론 (140문)</h2>
-
-                <h3>🎯 주요 출제 주제</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>주제</th>
-                            <th>2018</th>
-                            <th>2019</th>
-                            <th>2020</th>
-                            <th>2021</th>
-                            <th>빈도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>사회보장기본법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>국민기초생활보장법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>국민연금법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>고용보험법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>국민건강보험법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>노인장기요양보험법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>아동/장애인/노인복지법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                        <tr>
-                            <td><strong>가정폭력/성폭력방지법</strong></td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td>✓</td>
-                            <td class="subject-tag law">매년</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>📅 연도별 출제 경향</h3>
-
-                <div class="yearly-section">
-                    <h4>2018년</h4>
-                    <ul>
-                        <li>사회복지사업법 (시설평가)</li>
-                        <li>각 법의 제정 시기</li>
-                        <li>산업재해보상보험법</li>
-                        <li>사회복지법인 이사회</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2019년</h4>
-                    <ul>
-                        <li>의료급여법 상세 조항</li>
-                        <li>기초연금법</li>
-                        <li>다문화가족지원법</li>
-                        <li>법령 제정 연도</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2020년</h4>
-                    <ul>
-                        <li>신빈민법(1834년 역사)</li>
-                        <li>긴급복지지원법</li>
-                        <li>성폭력방지법</li>
-                        <li>각 법의 급여 내용</li>
-                    </ul>
-                </div>
-
-                <div class="yearly-section">
-                    <h4>2021년</h4>
-                    <ul>
-                        <li>사회보장기본법 기본이념</li>
-                        <li>헌법재판소 결정</li>
-                        <li>자원봉사활동기본법</li>
-                        <li>법령의 체계</li>
-                    </ul>
-                </div>
-
-                <h3>🔝 핵심 주제 순위</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>순위</th>
-                            <th>주제</th>
-                            <th>출제횟수</th>
-                            <th>난이도</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="rank-badge">1</span></td>
-                            <td><strong>국민기초생활보장법</strong></td>
-                            <td>8회</td>
-                            <td><span class="difficulty easy">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">2</span></td>
-                            <td><strong>사회보험 4대</strong></td>
-                            <td>7회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">3</span></td>
-                            <td><strong>사회보장기본법</strong></td>
-                            <td>6회</td>
-                            <td><span class="difficulty easy">⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">4</span></td>
-                            <td><strong>복지법 일반</strong></td>
-                            <td>6회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                        <tr>
-                            <td><span class="rank-badge">5</span></td>
-                            <td><strong>가족/아동/노인법</strong></td>
-                            <td>5회</td>
-                            <td><span class="difficulty medium">⭐⭐</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>💡 정답 분포</h3>
-                <div class="chart-bar">
-                    <div class="chart-label">① 번</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">② 번</div>
-                    <div class="chart-bar-fill" style="width: 26%;">26%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">③ 번</div>
-                    <div class="chart-bar-fill" style="width: 22%;">22%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">④ 번</div>
-                    <div class="chart-bar-fill" style="width: 20%;">20%</div>
-                </div>
-                <div class="chart-bar">
-                    <div class="chart-label">⑤ 번</div>
-                    <div class="chart-bar-fill" style="width: 12%;">12%</div>
-                </div>
-                <p style="margin-top: 10px; color: #666; font-size: 0.9em;"><strong>특징:</strong> ②③번이 자주 정답 (약 48%)</p>
-            </div>
-        </div>
-
-        <!-- 5. Strategy Tab -->
-        <div id="strategy" class="tab-content">
-            <div class="card">
-                <h2>🎯 고득점 전략</h2>
-
-                <div class="strategy-box">
-                    <h4>🔑 1단계: 기본개념 정확히 학습</h4>
-                    <ol>
-                        <li><strong>1과목</strong>: 사회보험 vs 공공부조 vs 사회수당의 차이</li>
-                        <li><strong>2과목</strong>: 리더십 유형별 특성 (지시적, 참여적, 방임적)</li>
-                        <li><strong>3과목</strong>: 각 법의 목적과 기본 구조</li>
-                    </ol>
-                </div>
-
-                <div class="strategy-box">
-                    <h4>📋 2단계: 법률 조항 구체적 암기</h4>
-                    <ol>
-                        <li>수급자의 나이, 소득, 재산 기준</li>
-                        <li>각 급여의 종류와 지급 방식</li>
-                        <li>법이 제정/시행된 연도</li>
-                        <li>각 제도의 보험료 부담률</li>
-                    </ol>
-                </div>
-
-                <div class="strategy-box">
-                    <h4>📚 3단계: 연도별 최신 내용 파악</h4>
-                    <ol>
-                        <li>2021년 이후 개정사항</li>
-                        <li>새로운 정책/제도 도입</li>
-                        <li>시설 평가 기준 변화</li>
-                        <li>급여 기준액 변동</li>
-                    </ol>
-                </div>
-
-                <h3>⚠️ 자주 혼동되는 부분</h3>
-                <div class="topic-list">
-                    <div class="topic-item">
-                        <strong>1과목</strong><br>
-                        ❌ 사회보험의 급여 vs 공공부조의 급여 차이<br>
-                        ✅ 기여 여부, 대상 선정 방식 차이점 정확히
+            <div id="subject-2-2" class="tab-content">
+                <div class="page-title">✋ 사회복지실천기술론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
                     </div>
-                    <div class="topic-item">
-                        <strong>2과목</strong><br>
-                        ❌ 모든 리더십 이론 혼동<br>
-                        ✅ 거래적 리더십 vs 변혁적 리더십 구분
-                    </div>
-                    <div class="topic-item">
-                        <strong>3과목</strong><br>
-                        ❌ 각 법의 수급 조건 혼동<br>
-                        ✅ 기준 중위소득 퍼센트별로 정확히
-                    </div>
-                    <div class="topic-item">
-                        <strong>공통</strong><br>
-                        ❌ 법이 언제 제정되었나<br>
-                        ✅ 언제 시행되었나 (더 중요)
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
                     </div>
                 </div>
+            </div>
 
-                <h3>💪 추가 학습 팁</h3>
-                <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                    <strong style="color: #0066cc;">✏️ 문제 풀이 순서</strong>
-                    <ol style="margin-top: 15px;">
-                        <li><strong>3과목</strong> (법제론) 먼저 공부 → 구체적 조항</li>
-                        <li><strong>1과목</strong> (정책론) → 기본 개념</li>
-                        <li><strong>2과목</strong> (행정론) → 이론 중심</li>
-                    </ol>
-                </div>
-
-                <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                    <strong style="color: #e65100;">📖 권장 학습 자료</strong>
-                    <ul style="margin-top: 15px;">
-                        <li>교과서 3권 (정책론, 행정론, 법제론)</li>
-                        <li>각 년도별 기출문제 복습</li>
-                        <li>최신 법령 개정사항 확인</li>
-                        <li>모의고사로 시간관리 연습</li>
-                    </ul>
-                </div>
-
-                <div style="background: #f3e5f5; padding: 20px; border-radius: 10px; margin: 20px 0;">
-                    <strong style="color: #6a1b9a;">⏰ 시험 시간 관리</strong>
-                    <ul style="margin-top: 15px;">
-                        <li><strong>3시간 전체</strong>: 180분 (75문제)</li>
-                        <li><strong>문제당</strong>: 약 2.4분</li>
-                        <li><strong>3과목 배분</strong>: 정책론 25분, 행정론 25분, 법제론 35분</li>
-                        <li><strong>점검 시간</strong>: 마지막 15분 재검토</li>
-                    </ul>
+            <div id="subject-2-3" class="tab-content">
+                <div class="page-title">🌍 지역사회복지론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
+                    </div>
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>📊 최종 체크리스트</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>항목</th>
-                            <th>확인 여부</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>복지국가 발달이론 (4개 이론)</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>에스핑-앤더슨 복지국가 유형</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>사회보험 vs 공공부조 차이</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>빈곤/불평등 측정 방식</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>리더십 이론 5가지</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>조직 구조 및 설계</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>예산의 종류 및 특징</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>기획기법 (PERT, Gantt)</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>국민기초생활보장법 급여 종류</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>사회보험 4대 급여</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>각 법의 수급 조건</strong></td>
-                            <td>☐</td>
-                        </tr>
-                        <tr>
-                            <td><strong>법령의 체계 (헌법→법→시행령→규칙)</strong></td>
-                            <td>☐</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- 3교시 - 준비중 -->
+            <div id="subject-3-1" class="tab-content">
+                <div class="page-title">💼 사회복지정책론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
+                    </div>
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="subject-3-2" class="tab-content">
+                <div class="page-title">🏢 사회복지행정론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
+                    </div>
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="subject-3-3" class="tab-content">
+                <div class="page-title">⚖️ 사회복지법제론</div>
+                <div class="page-subtitle">2022·2023·2024 업로드 예정</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
+                    </div>
+                    <div class="card-content show">
+                        <p>2022~2024년 기출문제가 업로드되면 이곳에 추가됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 시험모드 -->
+            <div id="test-mode" class="tab-content">
+                <div class="page-title">🎯 시험모드</div>
+                <div class="page-subtitle">2018~2021년 모든 기출문제로 실전 연습</div>
+                <div class="unit-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">📅 준비 중입니다</div>
+                        </div>
+                    </div>
+                    <div class="card-content show">
+                        <p>시험모드 기능이 곧 추가됩니다. 2022~2024년 데이터 업로드 후 완성됩니다.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 메모장 -->
+            <div id="memo-pad" class="tab-content">
+                <div class="page-title">📝 메모장</div>
+                <div class="page-subtitle">학습 내용 기록 및 정리</div>
+                <textarea id="memoContent" style="width: 100%; min-height: 400px; padding: 15px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: 0.95em;" placeholder="여기에 메모를 작성하세요..."></textarea>
+                <button class="btn" onclick="saveMemo()" style="margin-top: 15px;">💾 메모 저장</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 문제 풀이 모달 -->
+    <div class="modal" id="problemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="modalTitle"></div>
+                    <div class="modal-meta" id="modalMeta"></div>
+                </div>
+                <button class="modal-close" onclick="closeProblem()">✕</button>
+            </div>
+
+            <div class="problem-statement" id="problemStatement"></div>
+            <div class="choices" id="choicesContainer"></div>
+            
+            <button class="memo-btn" id="memoToggleBtn" onclick="toggleProblemMemo()">📝 메모 추가</button>
+            <div class="problem-memo" id="problemMemoDiv">
+                <textarea id="problemMemoText" placeholder="이 문제에 대한 메모를 작성하세요..."></textarea>
+                <button class="btn" onclick="saveProblemMemo()" style="margin-top: 8px; padding: 8px 16px;">저장</button>
+            </div>
+
+            <div class="btn-group" style="margin-bottom: 25px;">
+                <button class="btn" id="answerBtn" onclick="showAnswer()">정답 보기</button>
+                <button class="btn btn-secondary" onclick="closeProblem()">닫기</button>
+            </div>
+
+            <div class="answer-section" id="answerSection">
+                <div class="answer-label">✓ 정답 및 해설</div>
+                <div class="answer-content" id="answerContent"></div>
+                <div class="wrong-answers">
+                    <div class="wrong-label">✗ 틀린 보기 분석</div>
+                    <div id="wrongChoicesContent"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>📊 사회복지사 1급 3교시 기출문제 분석 v2.0 | 2018~2021년 데이터 기반</p>
-        <p style="font-size: 0.9em; margin-top: 10px;">💡 이 자료는 학습 참고용입니다. 최신 정보는 한국사회복지사협회를 참고하세요.</p>
-    </footer>
-
     <script>
-        function switchTab(evt, tabName) {
-            // Hide all tab contents
-            const tabContents = document.getElementsByClassName("tab-content");
-            for (let i = 0; i < tabContents.length; i++) {
-                tabContents[i].classList.remove("active");
+        // ===== 기출문제 데이터 =====
+        const examData = {
+            "subject-1-1": {
+                title: "인간행동과사회환경",
+                problems: [
+                    // 인간발달의 원리
+                    { unit: "인간발달의 원리", year: 2021, num: 1, text: "인간발달의 특성 중 '순서성'에 대한 설명으로 가장 옳은 것은?", choices: ["① 모든 발달이 동일한 속도로 진행된다", "② 발달이 일정한 순서대로 진행되며 이 순서는 대체로 예측 가능하다", "③ 개인의 발달 순서는 모두 다르다", "④ 발달은 무작위로 일어난다", "⑤ 환경에 따라 발달 순서가 결정된다"], answer: "②", answerExplain: "순서성은 발달이 일정한 순서대로 진행되며 이 순서는 대체로 예측 가능하다는 특징을 의미합니다." },
+                    { unit: "인간발달의 원리", year: 2020, num: 2, text: "발달의 방향성에서 근위원칙(Proximodistal)이 의미하는 바로 옳은 것은?", choices: ["① 중심부에서 말초부로 발달이 진행된다", "② 상부에서 하부로만 진행", "③ 좌우 균형있게 발달", "④ 말초부에서 중심부로 진행", "⑤ 발달 방향이 무질서하다"], answer: "①", answerExplain: "중심부에서 말초부로 발달이 진행되므로, 몸통의 통제 후 팔다리, 손가락 순서로 발달합니다." },
+                    { unit: "인간발달의 원리", year: 2019, num: 3, text: "발달의 방향성(Cephalocaudal trend)을 가장 잘 설명하는 것은?", choices: ["① 시간 순서대로 진행되는 것", "② 모두 동일한 속도로 진행되는 것", "③ 두부에서 미부(머리에서 발)로 진행되는 것", "④ 역행하여 진행되는 것", "⑤ 개인차가 전혀 없는 것"], answer: "③", answerExplain: "두부에서 미부(머리에서 발)로 진행되는 발달 방향성을 의미합니다." },
+                    { unit: "인간발달의 원리", year: 2018, num: 1, text: "인간발달에 관한 설명으로 옳지 않은 것은?", choices: ["① 발달의 속도에는 개인차가 있다", "② 발달은 하부에서 상부로, 말초부위에서 중심부위로 진행된다", "③ 발달은 유전과 환경의 상호작용에 의해 이루어진다", "④ 발달에는 결정적 시기가 있다", "⑤ 발달은 양적 변화와 질적 변화를 포함한다"], answer: "②", answerExplain: "발달의 방향성은 상부에서 하부로, 중심부에서 말초부로 진행됩니다." },
+                    
+                    // 프로이트 정신분석
+                    { unit: "프로이트 정신분석", year: 2021, num: 8, text: "프로이트의 성격구조 중 현실원칙에 따라 작동하는 것은?", choices: ["① 원초아(쾌락원칙)", "② 자아(현실원칙)", "③ 초자아(도덕원칙)", "④ 리비도", "⑤ 방어기제"], answer: "②", answerExplain: "자아는 현실원칙에 기초하여 작동하며 원초아의 충동과 초자아의 도덕 사이에서 균형을 맞춥니다." },
+                    { unit: "프로이트 정신분석", year: 2020, num: 6, text: "프로이트의 심리성적 발달단계 중 3-6세는?", choices: ["① 구강기", "② 항문기", "③ 남근기", "④ 잠복기", "⑤ 생식기"], answer: "③", answerExplain: "남근기는 3-6세에 해당하며 오이디푸스/엘렉트라 콤플렉스가 나타나는 시기입니다." },
+                    { unit: "프로이트 정신분석", year: 2019, num: 5, text: "부인(Denial)은 어떤 방어기제인가?", choices: ["① 억압", "② 부인", "③ 투사", "④ 승화", "⑤ 합리화"], answer: "②", answerExplain: "부인은 받아들이기 어려운 현실을 인정하지 않으려는 방어기제입니다." },
+                    { unit: "프로이트 정신분석", year: 2018, num: 6, text: "프로이드(S. Freud)의 정신분석이론에 관한 설명으로 옳지 않은 것은?", choices: ["① 어린 시절에 겪었던 과거 경험의 중요성을 강조한다", "② 엄격한 배변훈련으로 항문보유적 성격이 형성될 수 있다", "③ 초자아는 성격의 실행자이자 마음의 이성적인 부분이다", "④ 생식기에는 이성에 대한 관심과 호기심이 높아진다", "⑤ 남자아이는 남근기에 오이디푸스 콤플렉스로 인한 거세불안을 경험한다"], answer: "③", answerExplain: "초자아는 성격의 도덕적 부분이며, 자아가 실행자 역할을 합니다." },
+                    
+                    // 에릭슨 심리사회적 발달
+                    { unit: "에릭슨 심리사회적 발달", year: 2021, num: 15, text: "에릭슨의 심리사회적 발달 5단계(청소년기) 위기와 덕목은?", choices: ["① 신뢰 vs 불신감, 희망", "② 자율성 vs 수치심, 의지", "③ 정체감 vs 역할혼미, 성실", "④ 생산성 vs 침체, 돌봄", "⑤ 자아통합 vs 절망, 지혜"], answer: "③", answerExplain: "청소년기(12-18세)는 정체감 vs 역할혼미 위기에서 성실(Fidelity)의 덕목 형성입니다." },
+                    { unit: "에릭슨 심리사회적 발달", year: 2020, num: 4, text: "에릭슨의 심리사회적 발달 1단계(영아기) 발달 위기는?", choices: ["① 신뢰 vs 불신감", "② 자율성 vs 수치심", "③ 주도성 vs 죄책감", "④ 근면성 vs 열등감", "⑤ 정체감 vs 혼미"], answer: "①", answerExplain: "영아기(0-1.5세)의 핵심 위기는 신뢰 vs 불신감입니다." },
+                    { unit: "에릭슨 심리사회적 발달", year: 2019, num: 4, text: "에릭슨(E. Erikson)의 심리사회적 발달단계에서 긍정적 결과와 주요관계의 연결이 옳지 않은 것은?", choices: ["① 영아기(0-2세, 신뢰감): 어머니", "② 유아기(2-4세): 부모", "③ 학령전기(4-6세): 가족", "④ 아동기(6-12세): 이웃, 학교", "⑤ 청소년기: 어머니"], answer: "⑤", answerExplain: "청소년기의 주요관계는 또래집단입니다." },
+                    { unit: "에릭슨 심리사회적 발달", year: 2018, num: 4, text: "에릭슨(E.Erikson)의 이론에 관한 설명으로 옳은 것을 모두 고른 것은?", choices: ["① ㄱ,ㄴ", "② ㄱ,ㄷ", "③ ㄷ,ㄹ", "④ ㄱ,ㄴ,ㄹ", "⑤ ㄱ,ㄴ,ㄷ,ㄹ"], answer: "⑤", answerExplain: "에릭슨 이론의 모든 핵심 개념들이 정확합니다." },
+                    
+                    // 로저스 인본주의
+                    { unit: "로저스 인본주의", year: 2021, num: 25, text: "로저스가 제시한 성격발달의 핵심 조건은?", choices: ["① 무조건적 긍정적 관심", "② 조건적 긍정적 관심", "③ 자아방어기제", "④ 사회적 학습", "⑤ 강화"], answer: "①", answerExplain: "무조건적 긍정적 관심이 건강한 성격발달의 가장 중요한 조건입니다." },
+                    { unit: "로저스 인본주의", year: 2020, num: 3, text: "로저스 이론에서 일치성(Congruence)의 의미는?", choices: ["① 방어기제의 작동", "② 억압된 감정", "③ 현실자아와 이상자아가 일치하여 건강한 성격을 형성하는 상태", "④ 투사 메커니즘", "⑤ 합리화 과정"], answer: "③", answerExplain: "일치성은 현실자아와 이상자아가 일치하여 건강한 성격을 형성하는 상태입니다." },
+                    { unit: "로저스 인본주의", year: 2019, num: 1, text: "로저스(C. Rogers)의 이론이 사회복지실천에 미친 영향으로 옳지 않은 것은?", choices: ["① 비지시적인 상담의 중요성을 강조한다", "② 공감적 상담의 중요성을 강조한다", "③ 비심판적 태도는 원조관계에 유용하다", "④ 클라이언트 자기결정권의 중요성을 강조한다", "⑤ 클라이언트의 과거 정신적 외상의 중요성을 강조한다"], answer: "⑤", answerExplain: "로저스 이론은 현재의 경험과 자아개념을 강조합니다." },
+                    { unit: "로저스 인본주의", year: 2018, num: 3, text: "로저스(C. Rogers)의 인본주의 이론에 관한 설명으로 옳지 않은 것은?", choices: ["① 인간의 주관적 경험을 강조한다", "② 인간의 성격발달단계를 제시한다", "③ 인간을 통합적 존재로 규정한다", "④ 인간을 합리적이고 미래지향적 존재로 규정한다", "⑤ 인간 본성의 긍정적인 측면과 자아개념의 중요성을 강조한다"], answer: "②", answerExplain: "로저스는 성격발달단계를 제시하지 않았습니다." },
+                    
+                    // 피아제 인지발달
+                    { unit: "피아제 인지발달", year: 2021, num: 2, text: "피아제의 감각운동기(0-2세)에 관한 설명으로 가장 옳은 것은?", choices: ["① 언어능력이 완전히 발달한다", "② 상징적 사고가 나타난다", "③ 물체영속성 개념이 형성된다", "④ 추상적 사고가 가능하다", "⑤ 도덕적 판단이 시작된다"], answer: "③", answerExplain: "감각운동기에 물체영속성 개념이 형성됩니다." },
+                    { unit: "피아제 인지발달", year: 2020, num: 11, text: "피아제(J. Piaget)의 인지이론에 관한 설명으로 옳은 것은?", choices: ["① 구체적 조작기에는 추상적으로 사고하고 추론을 통해 가설을 검증할 수 있다", "② 인지능력의 발달은 아동과 환경 간의 상호작용에 의해 단계적으로 성취되며 발달단계의 순서는 변하지 않는다", "③ 인간의 무의식에 초점을 둔다", "④ 도덕발달단계를 1단계에서 6단계로 제시한다", "⑤ 보존개념은 전조작기에 획득된다"], answer: "②", answerExplain: "피아제의 인지발달 순서는 불변입니다." },
+                    { unit: "피아제 인지발달", year: 2019, num: 2, text: "인간발달이론이 사회복지실천에 유용한 이유로 옳지 않은 것은?", choices: ["① 개인 적응과 부적응의 판단 기준이 된다", "② 모든 연령 계층의 클라이언트와 일할 수 있는 기반이 된다", "③ 생애주기에 따른 변화와 안정 요인을 이해하게 한다", "④ 발달단계에 따라 신체, 심리, 사회적 기능을 분절적으로 이해하게 한다", "⑤ 발달단계별 욕구에 따른 사회복지제도의 기반을 제공한다"], answer: "④", answerExplain: "발달단계를 통합적으로 이해해야 합니다." },
+                    { unit: "피아제 인지발달", year: 2018, num: 2, text: "피아제(J. Piaget)의 인지발달이론에 관한 설명으로 옳지 않은 것은?", choices: ["① 인지발달은 동화기제와 조절기제를 활용하여 환경에 적응하는 것이다", "② 인지발달은 감각운동기, 전조작기, 구체적 조작기, 형식적 조작기로 구분한다", "③ 구체적 조작기에는 추상적 사고가 가능하다", "④ 인지발달은 개인과 환경의 상호작용에서 이루어지는 적응과정이다", "⑤ 상위단계는 이전 하위단계를 기초로 형성되며 하위단계를 통합한다"], answer: "③", answerExplain: "구체적 조작기에는 구체적 사고만 가능하고, 형식적 조작기에 추상적 사고가 가능합니다." },
+                ]
+            },
+            "subject-1-2": {
+                title: "사회복지조사론",
+                problems: [
+                    // 조사 기초개념
+                    { unit: "조사 기초개념", year: 2021, num: 26, text: "과학적 조사의 특징으로 옳지 않은 것은?", choices: ["① 체계성이 있다", "② 객관성을 추구한다", "③ 직관이나 추측에 주로 의존한다", "④ 논리적이고 합리적이다", "⑤ 재현성과 검증가능성이 있다"], answer: "③", answerExplain: "과학적 조사는 직관이나 추측이 아닌 체계적이고 객관적인 방법을 사용합니다." },
+                    { unit: "조사 기초개념", year: 2020, num: 26, text: "변수(Variable)에 대한 설명으로 가장 옳은 것은?", choices: ["① 조사 대상자의 특성", "② 조사자의 선입견", "③ 측정하고자 하는 속성이 다양한 값을 가질 수 있는 것", "④ 조사 도구의 종류", "⑤ 표본의 크기"], answer: "③", answerExplain: "변수는 값이 변할 수 있는 속성으로, 독립변수와 종속변수로 구분됩니다." },
+                    { unit: "조사 기초개념", year: 2019, num: 26, text: "가설(Hypothesis)의 특징으로 옳지 않은 것은?", choices: ["① 변수 간의 관계에 대한 예측이다", "② 검증 가능해야 한다", "③ 모든 연구에 필수적이다", "④ 이론에 기반해야 한다", "⑤ 단순하고 명확해야 한다"], answer: "③", answerExplain: "가설이 필요한 경우도 있지만 모든 연구에 필수적인 것은 아닙니다." },
+                    { unit: "조사 기초개념", year: 2018, num: 26, text: "모집단(Population)에 대한 설명으로 가장 옳은 것은?", choices: ["① 조사의 편의상 선택된 대상", "② 연구자가 연구하고자 하는 전체 대상", "③ 표본에서 선택된 몇 명의 사람들", "④ 무작위로 선택된 대상들", "⑤ 조사 대상을 임의로 나눈 것"], answer: "②", answerExplain: "모집단은 연구자가 알고자 하는 전체 집단을 의미합니다." },
+                    
+                    // 측정과 척도
+                    { unit: "측정과 척도", year: 2021, num: 31, text: "신뢰도(Reliability)에 대한 설명으로 가장 옳은 것은?", choices: ["① 측정도구가 측정하고자 하는 개념을 정확히 측정하는 정도", "② 측정도구가 일관성 있게 측정하는 정도", "③ 표본의 크기", "④ 조사 대상자의 반응률", "⑤ 표집 오차의 크기"], answer: "②", answerExplain: "신뢰도는 동일한 개념을 반복 측정할 때 일관된 결과를 얻는 정도입니다." },
+                    { unit: "측정과 척도", year: 2020, num: 32, text: "타당도(Validity)와 신뢰도의 관계로 옳은 것은?", choices: ["① 신뢰도가 높으면 타당도도 반드시 높다", "② 타당도가 높으면 신뢰도도 반드시 높다", "③ 높은 타당도를 위해서는 신뢰도가 필요조건이다", "④ 두 개념은 전혀 관계가 없다", "⑤ 신뢰도는 필요 없다"], answer: "③", answerExplain: "타당도가 높으려면 먼저 신뢰도가 높아야 합니다." },
+                    { unit: "측정과 척도", year: 2019, num: 31, text: "리커트 척도(Likert Scale)의 특징으로 옳지 않은 것은?", choices: ["① 순서척도(Ordinal Scale)이다", "② 태도 측정에 주로 사용된다", "③ 명확한 0점이 있다", "④ 5점이나 7점 척도로 많이 사용된다", "⑤ 동의 정도를 측정한다"], answer: "③", answerExplain: "리커트 척도는 순서척도로서 명확한 0점이 없습니다." },
+                    { unit: "측정과 척도", year: 2018, num: 30, text: "명목척도(Nominal Scale)의 예로 가장 적절한 것은?", choices: ["① 신장(cm)", "② 성별(남/여)", "③ 선호도(1순위~5순위)", "④ 나이", "⑤ 소득수준"], answer: "②", answerExplain: "명목척도는 분류만 가능한 척도로, 성별이 대표적인 예입니다." },
+                ]
             }
+        };
 
-            // Remove active class from all buttons
-            const tabButtons = document.getElementsByClassName("tab-button");
-            for (let i = 0; i < tabButtons.length; i++) {
-                tabButtons[i].classList.remove("active");
+        // ===== UI 함수 =====
+        function switchContent(contentId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            document.getElementById(contentId).classList.add('active');
+            element.classList.add('active');
+            
+            if (contentId.startsWith('subject')) {
+                renderContent(contentId);
             }
-
-            // Show the current tab
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
         }
 
-        // Initialize first tab
-        window.addEventListener('load', function() {
-            document.querySelector('.tab-button').click();
+        function renderContent(contentId) {
+            const data = examData[contentId];
+            if (!data) return;
+
+            const containerId = 'content-' + contentId;
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            // 단원별로 그룹화
+            const problemsByUnit = {};
+            data.problems.forEach(p => {
+                if (!problemsByUnit[p.unit]) {
+                    problemsByUnit[p.unit] = { byYear: {} };
+                }
+                if (!problemsByUnit[p.unit].byYear[p.year]) {
+                    problemsByUnit[p.unit].byYear[p.year] = [];
+                }
+                problemsByUnit[p.unit].byYear[p.year].push(p);
+            });
+
+            // 단원별로 표시
+            Object.keys(problemsByUnit).forEach(unit => {
+                const unitCard = document.createElement('div');
+                unitCard.className = 'unit-card';
+                
+                const years = Object.keys(problemsByUnit[unit].byYear).sort((a, b) => b - a);
+                const totalProblems = years.reduce((sum, y) => sum + problemsByUnit[unit].byYear[y].length, 0);
+                
+                unitCard.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">${unit} <span class="badge">${totalProblems}문제</span></div>
+                        </div>
+                        <div class="card-toggle">▼</div>
+                    </div>
+                    <div class="card-content show">
+                        <div class="concept-section">
+                            <div class="concept-title">📌 핵심개념 요약</div>
+                            <div class="concept-content">
+                                <p>이 단원의 핵심 내용을 정리합니다.</p>
+                                <ul>
+                                    <li>개념 1</li>
+                                    <li>개념 2</li>
+                                    <li>개념 3</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="problems-section">
+                            <div class="problems-title">🔍 기출문제 (${totalProblems}개)</div>
+                        </div>
+                    </div>
+                `;
+
+                const problemsDiv = unitCard.querySelector('.problems-section');
+                
+                years.forEach(year => {
+                    problemsByUnit[unit].byYear[year].forEach(problem => {
+                        const problemItem = document.createElement('div');
+                        problemItem.className = 'problem-item';
+                        problemItem.innerHTML = `
+                            <div class="problem-info">
+                                <span class="problem-year-badge">${year}년 ${problem.num}번</span>
+                                <div class="problem-text">${problem.text}</div>
+                            </div>
+                            <div class="problem-arrow">→</div>
+                        `;
+                        problemItem.addEventListener('click', () => openProblem(problem));
+                        problemsDiv.appendChild(problemItem);
+                    });
+                });
+
+                container.appendChild(unitCard);
+
+                // 토글 기능
+                unitCard.querySelector('.card-header').addEventListener('click', () => {
+                    const content = unitCard.querySelector('.card-content');
+                    const toggle = unitCard.querySelector('.card-toggle');
+                    content.classList.toggle('show');
+                    toggle.classList.toggle('collapsed');
+                });
+            });
+        }
+
+        function openProblem(problem) {
+            document.getElementById('modalTitle').textContent = problem.text;
+            document.getElementById('modalMeta').innerHTML = `${problem.year}년 ${problem.num}번 | ${problem.unit}`;
+            document.getElementById('problemStatement').textContent = problem.text;
+            document.getElementById('answerSection').classList.remove('show');
+            document.getElementById('answerBtn').style.display = 'block';
+            document.getElementById('problemMemoDiv').classList.remove('show');
+
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.innerHTML = '';
+
+            if (problem.choices && problem.choices.length > 0) {
+                problem.choices.forEach(choice => {
+                    const div = document.createElement('div');
+                    div.className = 'choice';
+                    div.textContent = choice;
+                    div.addEventListener('click', () => {
+                        document.querySelectorAll('#choicesContainer .choice').forEach(c => c.classList.remove('selected'));
+                        div.classList.add('selected');
+                    });
+                    choicesContainer.appendChild(div);
+                });
+            }
+
+            window.currentProblem = problem;
+            document.getElementById('problemModal').classList.add('active');
+        }
+
+        function showAnswer() {
+            const p = window.currentProblem;
+            document.getElementById('answerContent').innerHTML = `
+                <strong>정답: ${p.answer}</strong><br><br>
+                <strong>해설:</strong> ${p.answerExplain || '해설 준비 중입니다.'}
+            `;
+            document.getElementById('answerSection').classList.add('show');
+            document.getElementById('answerBtn').style.display = 'none';
+        }
+
+        function closeProblem() {
+            document.getElementById('problemModal').classList.remove('active');
+        }
+
+        function toggleProblemMemo() {
+            const memoDiv = document.getElementById('problemMemoDiv');
+            memoDiv.classList.toggle('show');
+        }
+
+        function saveProblemMemo() {
+            alert('메모가 저장되었습니다!');
+        }
+
+        function saveMemo() {
+            const content = document.getElementById('memoContent').value;
+            localStorage.setItem('examMemo', content);
+            alert('메모가 저장되었습니다! 💾');
+        }
+
+        // 다크모드
+        document.getElementById('darkToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // 초기화 - 즉시 실행
+        function initializeApp() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+            const savedMemo = localStorage.getItem('examMemo');
+            if (savedMemo) {
+                document.getElementById('memoContent').value = savedMemo;
+            }
+            // 즉시 콘텐츠 렌더링
+            renderContent('subject-1-1');
+        }
+
+        // 문서 준비 완료 시 실행
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+
+        window.addEventListener('load', () => {
+            renderContent('subject-1-1');
+        });
+
+        // 모달 배경 클릭으로 닫기
+        document.getElementById('problemModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('problemModal')) {
+                closeProblem();
+            }
+        });
+
+        // ESC 키로 닫기
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('problemModal');
+                if (modal.classList.contains('active')) {
+                    closeProblem();
+                }
+            }
         });
     </script>
 </body>
 </html>
-```
-
----
-
-## 📋 **HTML 파일 사용 방법**
-
-### **1️⃣ 파일 저장**
-```
-파일명: 사회복지사_3교시_분석_v2.0.html
-위치: 바탕화면 또는 폴더
-```
-
-### **2️⃣ 실행 방법**
-```
-① 파일 더블클릭
-② 웹브라우저 자동 실행 (Chrome, Edge, Safari 등)
-③ 탭을 클릭하여 과목별 내용 확인
