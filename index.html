@@ -3,339 +3,1258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>랜덤 플레이 타임</title>
+    <title>사회복지사 1급 완성 학습 플랫폼</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #48bb78;
+            --warning: #ed8936;
+            --danger: #f56565;
+            --light: #f5f7fa;
+            --dark: #2d3748;
+            --text: #2d3748;
+            --border: #e2e8f0;
         }
+        
+        html { scroll-behavior: smooth; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Pretendard", Arial, sans-serif;
-            background: linear-gradient(135deg, #00CEC9 0%, #74B9FF 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans CJK KR", sans-serif;
+            background: var(--light);
+            color: var(--text);
+            line-height: 1.6;
         }
-        .container {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 206, 201, 0.3);
-            overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
+        
+        body.dark-mode {
+            background: #1a202c;
+            color: #e2e8f0;
+            --text: #e2e8f0;
+            --light: #2d3748;
+            --border: #4a5568;
         }
+        
+        /* ===== 헤더 ===== */
         .header {
-            background: linear-gradient(135deg, #00CEC9 0%, #00B8B2 100%);
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .header::before {
-            content: '⚡';
-            position: absolute;
-            font-size: 150px;
-            opacity: 0.1;
-            top: -30px;
-            right: -20px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 8px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        .header .subtitle {
-            font-size: 16px;
-            opacity: 0.95;
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-        .header .team-name {
-            font-size: 14px;
-            opacity: 0.9;
-            font-weight: 400;
-        }
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            background: #000;
-        }
-        .video-wrapper iframe {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .controls {
-            padding: 30px;
-            text-align: center;
-            background: linear-gradient(to bottom, white 0%, #f8fcfc 100%);
-        }
-        .btn {
-            background: linear-gradient(135deg, #00CEC9 0%, #00B8B2 100%);
+            right: 0;
+            height: 65px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            border: none;
-            padding: 16px 45px;
-            font-size: 17px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(0, 206, 201, 0.3);
-            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 1000;
         }
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 206, 201, 0.4);
-            background: linear-gradient(135deg, #00B8B2 0%, #00CEC9 100%);
-        }
-        .btn:active {
-            transform: translateY(-1px);
-        }
-        .playlist-section {
-            padding: 35px 30px;
-            background: #F0FFFE;
-            border-top: 3px solid #00CEC9;
-        }
-        .playlist-section h3 {
-            font-size: 20px;
-            color: #2d3436;
-            margin-bottom: 25px;
-            text-align: center;
-            font-weight: 700;
-        }
-        .playlist-section h3 .count {
-            color: #00CEC9;
-            font-weight: 800;
-            font-size: 22px;
-        }
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        
+        .header-left {
+            display: flex;
+            align-items: center;
             gap: 20px;
         }
-        .video-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 206, 201, 0.15);
-            transition: all 0.3s ease;
+        
+        .menu-toggle {
+            display: none;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
             cursor: pointer;
-            border: 2px solid transparent;
+            font-size: 1.2em;
+            transition: all 0.3s;
         }
-        .video-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0, 206, 201, 0.25);
-            border-color: #00CEC9;
+        
+        .menu-toggle:hover { background: rgba(255,255,255,0.3); }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
-        .video-thumbnail {
-            position: relative;
-            padding-bottom: 56.25%;
-            background: #000;
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s;
+        }
+        
+        .control-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* ===== 메인 레이아웃 ===== */
+        .main-wrapper {
+            display: flex;
+            margin-top: 65px;
+            min-height: calc(100vh - 65px);
+        }
+        
+        /* ===== 사이드바 ===== */
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px 0;
+            position: fixed;
+            left: 0;
+            top: 65px;
+            height: calc(100vh - 65px);
+            z-index: 500;
+        }
+        
+        body.dark-mode .sidebar {
+            background: #2d3748;
+            border-right-color: #4a5568;
+        }
+        
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 3px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+        
+        .sidebar-section {
+            margin-bottom: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        body.dark-mode .sidebar-section { border-bottom-color: #4a5568; }
+        
+        .section-title {
+            padding: 15px 20px;
+            font-weight: 800;
+            font-size: 0.9em;
+            color: white;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .expand-arrow {
+            display: inline-block;
+            transition: transform 0.3s;
+            font-size: 0.8em;
+        }
+        
+        .expand-arrow.collapsed { transform: rotate(-90deg); }
+        
+        .subject-list {
+            max-height: 500px;
             overflow: hidden;
+            transition: max-height 0.3s ease;
         }
-        .video-thumbnail img {
+        
+        .subject-list.collapsed { max-height: 0; }
+        
+        .subject-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            transition: all 0.2s;
+            font-size: 0.95em;
+            background: white;
+        }
+        
+        body.dark-mode .subject-item {
+            background: #3a3f5a;
+        }
+        
+        .subject-item:hover {
+            background: rgba(102, 126, 234, 0.08);
+            border-left-color: var(--primary);
+            padding-left: 24px;
+        }
+        
+        .subject-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-left-color: var(--primary);
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        /* ===== 콘텐츠 영역 ===== */
+        .content-area {
+            margin-left: 300px;
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .content-area::-webkit-scrollbar { width: 8px; }
+        .content-area::-webkit-scrollbar-track { background: var(--light); }
+        .content-area::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        
+        .page-title {
+            font-size: 2em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+        
+        /* ===== 카드 ===== */
+        .unit-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .unit-card {
+            background: #2d3748;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .unit-card:hover {
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        
+        body.dark-mode .card-header {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+        }
+        
+        .card-header:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+        }
+        
+        .card-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .card-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85em;
+        }
+        
+        .badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .card-toggle {
+            font-size: 1.3em;
+            color: var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .card-toggle.collapsed { transform: rotate(-90deg); }
+        
+        .card-content {
+            padding: 25px;
+            display: none;
+        }
+        
+        .card-content.show { display: block; }
+        
+        .concept-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        body.dark-mode .concept-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.15));
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .concept-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+        
+        .concept-content {
+            font-size: 0.95em;
+            line-height: 1.8;
+            color: var(--text);
+        }
+        
+        .concept-content ul {
+            list-style: none;
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        
+        .concept-content li {
+            padding: 6px 0 6px 0;
+            position: relative;
+        }
+        
+        .concept-content li:before {
+            content: "▹";
             position: absolute;
+            left: -16px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        /* ===== 문제 카드 ===== */
+        .problems-section {
+            margin-top: 20px;
+        }
+        
+        .problems-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .problem-item {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        body.dark-mode .problem-item {
+            background: #3a3f5a;
+            border-color: #4a5568;
+        }
+        
+        .problem-item:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(4px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+        
+        .problem-info {
+            flex: 1;
+        }
+        
+        .problem-year-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        
+        .problem-text {
+            margin-top: 6px;
+            font-size: 0.9em;
+            color: var(--text);
+            line-height: 1.5;
+        }
+        
+        .problem-arrow {
+            color: #cbd5e0;
+            font-size: 1.2em;
+            transition: all 0.2s;
+        }
+        
+        .problem-item:hover .problem-arrow {
+            color: var(--primary);
+            transform: translateX(4px);
+        }
+        
+        /* ===== 모달 ===== */
+        .modal {
+            display: none;
+            position: fixed;
             top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 750px;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
-        .video-card:hover .video-thumbnail img {
-            transform: scale(1.05);
+        
+        body.dark-mode .modal-content {
+            background: #2d3748;
         }
-        .video-thumbnail .play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 206, 201, 0.95);
-            border-radius: 50%;
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
+            gap: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary);
+            flex: 1;
+        }
+        
+        .modal-meta {
+            font-size: 0.85em;
+            color: #718096;
+            margin-top: 8px;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #718096;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 206, 201, 0.4);
+            flex-shrink: 0;
+            transition: all 0.2s;
         }
-        .video-card:hover .play-overlay {
-            opacity: 1;
+        
+        .modal-close:hover {
+            color: var(--danger);
+            background: rgba(245, 101, 101, 0.1);
+            border-radius: 6px;
         }
-        .play-overlay::after {
-            content: '▶';
-            color: white;
-            font-size: 22px;
-            margin-left: 4px;
+        
+        .problem-statement {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            margin: 20px 0;
+            font-size: 0.95em;
+            line-height: 1.7;
         }
-        .video-info {
-            padding: 14px;
+        
+        body.dark-mode .problem-statement {
+            background: #3a3f5a;
+            border-color: #4a5568;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        
+        .choice {
+            padding: 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
             background: white;
         }
-        .video-title {
-            font-size: 14px;
+        
+        body.dark-mode .choice {
+            background: #3a3f5a;
+            border-color: #4a5568;
+        }
+        
+        .choice:hover {
+            border-color: var(--primary);
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateX(4px);
+        }
+        
+        .choice.selected {
+            border-color: var(--success);
+            background: rgba(72, 187, 120, 0.1);
             font-weight: 600;
-            color: #2d3436;
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 42px;
         }
-        .footer {
+        
+        /* ===== 정답 섹션 ===== */
+        .answer-section {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(72, 187, 120, 0.05));
+            border: 2px solid var(--success);
+            border-radius: 8px;
             padding: 20px;
-            text-align: center;
-            background: white;
-            color: #636e72;
-            font-size: 13px;
-            border-top: 1px solid #e9f5f5;
+            margin-top: 25px;
+            display: none;
         }
-        .footer .heart {
-            color: #00CEC9;
-            animation: heartbeat 1.5s ease-in-out infinite;
+        
+        body.dark-mode .answer-section {
+            background: linear-gradient(135deg, rgba(72, 187, 120, 0.15), rgba(72, 187, 120, 0.1));
         }
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            10%, 30% { transform: scale(1.1); }
-            20%, 40% { transform: scale(1); }
+        
+        .answer-section.show { display: block; }
+        
+        .answer-label {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 12px;
+            font-size: 1.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
-        @media (max-width: 600px) {
-            .video-grid {
-                grid-template-columns: 1fr;
+        
+        .answer-content {
+            color: var(--text);
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+        
+        .wrong-answers {
+            background: rgba(245, 101, 101, 0.08);
+            border-left: 4px solid var(--danger);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .wrong-label {
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .wrong-item {
+            font-size: 0.9em;
+            padding: 6px 0;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* ===== 버튼 ===== */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #cbd5e0;
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: #a0aec0;
+            box-shadow: none;
+        }
+        
+        /* ===== 반응형 ===== */
+        @media (max-width: 1024px) {
+            .content-area { padding: 20px; }
+            .modal-content { padding: 30px 20px; }
+            .page-title { font-size: 1.6em; }
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+                position: relative;
+                top: 0;
+                left: 0;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 0;
             }
-            .header h1 {
-                font-size: 26px;
+            
+            .sidebar.open {
+                max-height: 70vh;
+                padding: 20px 0;
+                overflow-y: auto;
             }
-            .btn {
-                padding: 14px 35px;
-                font-size: 16px;
+            
+            .content-area {
+                margin-left: 0;
+                padding: 20px;
             }
+            
+            .header-title { font-size: 1em; }
+            .control-btn { padding: 6px 12px; font-size: 0.85em; }
+            
+            .page-title { font-size: 1.4em; }
+            .modal-content { padding: 25px 15px; }
+            
+            .problem-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .problem-year-badge { align-self: flex-start; }
         }
+        
+        @media (max-width: 480px) {
+            .header { padding: 0 15px; }
+            .content-area { padding: 15px; }
+            .card-content { padding: 15px; }
+            .modal-content { padding: 20px; }
+            
+            .page-title { font-size: 1.2em; }
+            .card-title { font-size: 1em; }
+            
+            .concept-section { padding: 15px; }
+            .problem-item { padding: 12px; }
+        }
+        
+        /* ===== 스크롤 바 ===== */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--light); }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎬 랜덤 플레이 타임</h1>
-            <div class="subtitle">⚡ 콘서트 전까지 함께 달려요요! ⚡</div>
-            <div class="team-name">Made by 민호특공대 </div>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="header-title">
+                <span>📚</span>
+                <span>사회복지사 1급</span>
+            </div>
         </div>
-        
-        <div class="video-wrapper">
-            <iframe id="videoFrame" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-            </iframe>
+        <div class="header-controls">
+            <button class="control-btn" id="darkToggle">🌙 다크모드</button>
         </div>
-        
-        <div class="controls">
-            <button class="btn" onclick="loadRandomVideo()">🔄 다른 영상 보기</button>
-        </div>
-        
-        <div class="playlist-section">
-            <h3>📋 총공 재생목록 <span class="count" id="videoCount">0</span>개</h3>
-            <div class="video-grid" id="videoGrid"></div>
-        </div>
-        
-        <div class="footer">
-            💙Made with <span class="heart"></span> by 민호특공대💙
+    </header>
+
+    <!-- 메인 레이아웃 -->
+    <div class="main-wrapper">
+        <!-- 사이드바 -->
+        <aside class="sidebar" id="sidebar">
+            <!-- 1교시 -->
+            <div class="sidebar-section">
+                <div class="section-title" onclick="toggleSection(this)">
+                    <span>1️⃣ 1교시</span>
+                    <span class="expand-arrow">▼</span>
+                </div>
+                <div class="subject-list">
+                    <div class="subject-item active" onclick="switchContent('1-1', this)">📖 인간행동과사회환경</div>
+                    <div class="subject-item" onclick="switchContent('1-2', this)">📊 사회복지조사론</div>
+                    <div class="subject-item" onclick="switchContent('1-3', this)">🔍 심리학 개론</div>
+                </div>
+            </div>
+
+            <!-- 2교시 -->
+            <div class="sidebar-section">
+                <div class="section-title" onclick="toggleSection(this)">
+                    <span>2️⃣ 2교시</span>
+                    <span class="expand-arrow">▼</span>
+                </div>
+                <div class="subject-list">
+                    <div class="subject-item" onclick="switchContent('2-1', this)">📋 사회복지정책과제도</div>
+                    <div class="subject-item" onclick="switchContent('2-2', this)">⚖️ 사회복지법제</div>
+                </div>
+            </div>
+
+            <!-- 3교시 -->
+            <div class="sidebar-section">
+                <div class="section-title" onclick="toggleSection(this)">
+                    <span>3️⃣ 3교시</span>
+                    <span class="expand-arrow">▼</span>
+                </div>
+                <div class="subject-list">
+                    <div class="subject-item" onclick="switchContent('3-1', this)">👥 사회복지실천론</div>
+                    <div class="subject-item" onclick="switchContent('3-2', this)">🏘️ 지역사회복지론</div>
+                    <div class="subject-item" onclick="switchContent('3-3', this)">🏢 사회복지행정론</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 콘텐츠 영역 -->
+        <main class="content-area" id="contentArea">
+            <div class="page-title">📖 인간행동과사회환경</div>
+            <div class="page-subtitle">2018~2024년 기출문제 완벽 정리 | 모든 단원 포함</div>
+            <div id="contentContainer"></div>
+        </main>
+    </div>
+
+    <!-- 문제 풀이 모달 -->
+    <div class="modal" id="problemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title" id="modalTitle"></div>
+                    <div class="modal-meta" id="modalMeta"></div>
+                </div>
+                <button class="modal-close" onclick="closeProblem()">✕</button>
+            </div>
+
+            <div class="problem-statement" id="problemStatement"></div>
+            <div class="choices" id="choicesContainer"></div>
+
+            <div class="btn-group">
+                <button class="btn" id="answerBtn" onclick="showAnswer()">정답 보기</button>
+                <button class="btn btn-secondary" onclick="closeProblem()">닫기</button>
+            </div>
+
+            <div class="answer-section" id="answerSection">
+                <div class="answer-label">✓ 정답 및 해설</div>
+                <div class="answer-content" id="answerContent"></div>
+                <div class="wrong-answers">
+                    <div class="wrong-label">✗ 틀린 보기 분석</div>
+                    <div id="wrongChoicesContent"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        const videos = [
-            { id: 'Ghg7vG3NMs4', title: 'Hankyeryeong Pass'},
-            { id: 'ILppFoa3FTI', title: 'Lonely Love' },
-            { id: 'DKgiBUaZXr4', title: 'My Reflection in My Heart' },
-            { id: 'BRiBNS0aTVo', title: '내 곁에 있어주 | 야외녹음실 ｜LIVE' },
-            { id: '1LlNcwtxsgg', title: 'I\'ll Give You the Love I Have Left'},
-            { id: 'rsW-F7IRGmU', title: 'Just a Friend' },
-            { id: 'H8ZnFKkc7ps', title: 'That Day'},
-            { id: 'q78AVE07wdI', title: 'I will let go' },
-            { id: '0JeQF_nrSmU', title: '내 곁에 있어주 (Stay by My Side) Official MV'},
-            { id: '33xZoSnV5t0', title: 'Stay by My Side(내 곁에 있어주) | 1theK' },
-            { id: 'ZJo6KHpI-2k', title: '한계령 (Hankyeryeong Pass) Official MV' },
-            { id: 'C7Y9D4hV3QU', title: 'Hankyeryeong Pass(한계령) | 1theK'},
-            { id: 'iQ4CCJgJKXM', title: '홀로된 사랑 | 트롯챔피언 | EP.72'},
-            { id: '-zYhlQn6yVI', title: '내 이름 아시죠 | 사랑의콜센타'},
-            { id: 'ZOPl8hBKd5c', title: ' 하이뮨의 NEW CF 촬영 현장'},
-            { id: 'jXJKJc5fZnE', title: '홀로된 사랑 (Lonely Love) Official MV'},
-            { id: '6lq_G6l4xRs', title: 'Lonely Love(홀로된 사랑) | 1theK' }
-        
+        // ===== 데이터 구조 =====
+        const courseData = {
+            '1-1': {
+                title: '📖 인간행동과사회환경',
+                units: [
+                    {
+                        name: '인간발달의 원리',
+                        concept: `<strong>발달의 정의</strong><br>태어나서 죽을 때까지 일어나는 신체, 심리, 사회적 변화<br><br>
+                        <strong>발달의 특성</strong>
+                        <ul>
+                        <li><strong>순서성:</strong> 일정한 순서대로 진행 (영아기 → 유아기 → 아동기...)</li>
+                        <li><strong>방향성:</strong> 중심부에서 말초로, 위에서 아래로</li>
+                        <li><strong>예측가능성:</strong> 발달 방향과 순서를 대략 예측할 수 있음</li>
+                        <li><strong>개인차:</strong> 같은 나이도 발달 속도가 다름</li>
+                        <li><strong>연속성:</strong> 연속적이지만 속도는 불균등</li>
+                        </ul>
+                        <strong>발달의 원리</strong>
+                        <ul>
+                        <li>유전과 환경의 상호작용</li>
+                        <li>결정적 시기의 존재</li>
+                        <li>각 영역의 상호 밀접한 연관성</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 2, text: "인간발달의 특성 중 순서성에 관한 설명으로 옳은 것은?", answer: "②", answerExplain: "발달의 순서성은 모든 아동이 일정한 순서로 발달한다는 의미이다. 에릭슨의 8단계 발달이론이 이를 잘 보여준다.", wrongAnswers: ["① 모든 아이가 같은 속도로 발달한다는 의미이다", "③ 발달은 한 번에 큰 변화가 일어난다", "④ 발달은 선택적이며 일부만 발달 가능", "⑤ 발달의 순서는 문화마다 다르다"] },
+                            { year: 2023, num: 1, text: "발달의 방향성 원리로 옳은 것은?", answer: "③", answerExplain: "방향성은 중심부에서 말초부로, 상부에서 하부로 진행된다. 예를 들어 아기가 목 제어 후 팔 제어를 한다.", wrongAnswers: ["① 발달은 빠르게 시작해서 느려진다", "② 모든 개인이 같은 방향으로 발달", "④ 발달은 무작위로 진행", "⑤ 발달의 방향은 예측 불가능"] },
+                            { year: 2022, num: 5, text: "발달에 영향을 미치는 요인으로 옳지 않은 것은?", answer: "④", answerExplain: "발달은 유전(내적 요인)과 환경(외적 요인)의 상호작용으로 일어난다. 둘 다 중요하다.", wrongAnswers: ["① 유전자는 발달에 영향을 미친다", "② 환경도 발달에 중요한 영향을 미친다", "③ 영양과 건강은 발달에 영향을 미친다", "⑤ 사회적 경험은 발달에 영향을 미친다"] },
+                            { year: 2021, num: 3, text: "결정적 시기(critical period)의 의미로 가장 적절한 것은?", answer: "②", answerExplain: "결정적 시기는 특정 발달이 가장 잘 일어나는 시기를 의미한다. 이 시기를 놓치면 나중에 학습하기 어렵다.", wrongAnswers: ["① 모든 발달이 일어나는 시기", "③ 발달이 멈추는 시기", "④ 발달 속도가 빠른 시기", "⑤ 발달이 역행하는 시기"] },
+                            { year: 2020, num: 2, text: "개인차의 원리에 관한 설명으로 옳은 것은?", answer: "①", answerExplain: "발달의 개인차 원리는 같은 나이 아이들도 발달 속도와 방식이 다르다는 의미이다.", wrongAnswers: ["② 모든 아이가 같은 속도로 발달", "③ 개인차는 좋지 않은 신호", "④ 발달 순서는 개인차가 없다", "⑤ 개인차는 환경의 영향만 받는다"] }
+                        ]
+                    },
+                    {
+                        name: '프로이트 정신분석이론',
+                        concept: `<strong>성격의 구조</strong>
+                        <ul>
+                        <li><strong>원초아(Id)</strong>: 욕구와 본능, 쾌락원칙</li>
+                        <li><strong>자아(Ego)</strong>: 현실원칙, 합리적 판단</li>
+                        <li><strong>초자아(Superego)</strong>: 도덕과 규범, 도덕원칙</li>
+                        </ul>
+                        <strong>5단계 심리성적 발달</strong>
+                        <ul>
+                        <li><strong>구강기(0-18개월)</strong>: 입으로 세상을 탐색, 빨기 반사</li>
+                        <li><strong>항문기(18개월-3세)</strong>: 배변 조절, 통제와 지배</li>
+                        <li><strong>남근기(3-6세)</strong>: 성기에 관심, 오이디푸스/엘렉트라 콤플렉스</li>
+                        <li><strong>잠복기(6-12세)</strong>: 성적 관심 억압, 학업 집중</li>
+                        <li><strong>생식기(12세 이후)</strong>: 성숙한 성인기, 이성관계</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 8, text: "프로이트의 성격구조 중 현실원칙에 따라 작동하는 것은?", answer: "②", answerExplain: "자아는 현실원칙에 따라 작동하며 원초아와 초자아 사이에서 조절 역할을 한다.", wrongAnswers: ["① 원초아", "③ 초자아", "④ 리비도", "⑤ 방어기제"] },
+                            { year: 2023, num: 12, text: "프로이트의 심리성적 발달단계 중 3-6세에 해당하는 단계는?", answer: "③", answerExplain: "3-6세는 남근기로 오이디푸스/엘렉트라 콤플렉스가 나타나는 시기이다.", wrongAnswers: ["① 구강기", "② 항문기", "④ 잠복기", "⑤ 생식기"] },
+                            { year: 2022, num: 18, text: "부인(denial)은 어떤 방어기제인가?", answer: "②", answerExplain: "부인은 받아들이기 어려운 현실을 인정하지 않는 방어기제이다.", wrongAnswers: ["① 억압", "③ 투사", "④ 승화", "⑤ 합리화"] }
+                        ]
+                    },
+                    {
+                        name: '에릭슨 심리사회적 발달이론',
+                        concept: `<strong>8단계 발달이론과 덕목</strong>
+                        <ul>
+                        <li><strong>1단계(0-1세)</strong>: 신뢰 vs 불신감 → 희망(hope)</li>
+                        <li><strong>2단계(1-3세)</strong>: 자율성 vs 수치심 → 의지(will)</li>
+                        <li><strong>3단계(3-6세)</strong>: 주도성 vs 죄책감 → 목적(purpose)</li>
+                        <li><strong>4단계(6-12세)</strong>: 근면성 vs 열등감 → 능력(competence)</li>
+                        <li><strong>5단계(12-18세)</strong>: 정체감 vs 역할혼미 → 성실(fidelity)</li>
+                        <li><strong>6단계(18-25세)</strong>: 친밀감 vs 고립감 → 사랑(love)</li>
+                        <li><strong>7단계(25-65세)</strong>: 생산성 vs 침체 → 돌봄(care)</li>
+                        <li><strong>8단계(65세+)</strong>: 자아통합 vs 절망 → 지혜(wisdom)</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 15, text: "에릭슨의 청소년기 발달과업은 무엇인가?", answer: "③", answerExplain: "청소년기(12-18세)의 발달과업은 정체감 확립과 역할혼미 극복이다.", wrongAnswers: ["① 신뢰감 형성", "② 자율성 발달", "④ 근면성 발달", "⑤ 생산성 추구"] },
+                            { year: 2023, num: 20, text: "에릭슨 이론에서 영아기 발달과업은?", answer: "①", answerExplain: "영아기의 발달과업은 신뢰감 형성과 불신감 극복이다.", wrongAnswers: ["② 자율성", "③ 주도성", "④ 근면성", "⑤ 정체감"] },
+                            { year: 2022, num: 9, text: "에릭슨이 강조한 성인기의 발달과업은?", answer: "②", answerExplain: "성인기의 중요한 발달과업은 깊은 인간관계 형성과 친밀감 추구이다.", wrongAnswers: ["① 정체감 확립", "③ 생산성 발달", "④ 근면성 추구", "⑤ 신뢰감 형성"] }
+                        ]
+                    },
+                    {
+                        name: '로저스 인본주의이론',
+                        concept: `<strong>핵심 개념</strong>
+                        <ul>
+                        <li><strong>자기실현경향성:</strong> 모든 개인은 자신의 잠재력을 실현하려는 경향이 있음</li>
+                        <li><strong>무조건적 긍정적 관심(UPR):</strong> 조건 없는 수용이 건강한 성격발달의 핵심</li>
+                        <li><strong>조건적 긍정적 관심:</strong> 조건부 수용으로 인한 부정적 발달</li>
+                        <li><strong>일치성:</strong> 현실자아와 이상자아의 일치</li>
+                        <li><strong>부일치성:</strong> 현실자아와 이상자아의 불일치</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 29, text: "로저스가 제시한 건강한 성격발달의 가장 중요한 조건은?", answer: "①", answerExplain: "무조건적 긍정적 관심이 건강한 성격발달의 가장 중요한 조건이다.", wrongAnswers: ["② 조건적 긍정적 관심", "③ 방어기제", "④ 사회적 학습", "⑤ 강화와 벌"] },
+                            { year: 2023, num: 35, text: "로저스 이론에서 일치성의 의미는?", answer: "③", answerExplain: "일치성은 현실자아와 이상자아가 일치하는 상태로 건강한 성격 형성을 나타낸다.", wrongAnswers: ["① 방어기제의 작동", "② 억압된 감정", "④ 투사 메커니즘", "⑤ 합리화 과정"] }
+                        ]
+                    }
+                ]
+            },
+            '1-2': {
+                title: '📊 사회복지조사론',
+                units: [
+                    {
+                        name: '조사의 개념과 목적',
+                        concept: `<strong>조사의 정의</strong><br>특정 현상을 체계적으로 관찰하고 기록하여 사실과 원인을 규명하는 과학적 방법<br><br>
+                        <strong>조사의 목적</strong>
+                        <ul>
+                        <li><strong>탐색적 조사:</strong> 새로운 현상이나 문제 발견</li>
+                        <li><strong>기술적 조사:</strong> 현상을 체계적으로 기술</li>
+                        <li><strong>설명적 조사:</strong> 원인과 결과의 인과관계 규명</li>
+                        <li><strong>예측적 조사:</strong> 미래 예측</li>
+                        </ul>
+                        <strong>조사의 특성</strong>
+                        <ul>
+                        <li>체계성: 계획적이고 조직적</li>
+                        <li>과학성: 객관적 증거 기반</li>
+                        <li>논리성: 논리적 추론</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 45, text: "사회복지조사의 목적 중 현상을 체계적으로 기술하는 조사는?", answer: "②", answerExplain: "기술적 조사는 현상이나 특성을 자세하고 정확하게 기술하는 것을 목적으로 한다.", wrongAnswers: ["① 탐색적 조사", "③ 설명적 조사", "④ 예측적 조사", "⑤ 평가적 조사"] },
+                            { year: 2023, num: 48, text: "인과관계를 규명하는 조사는?", answer: "③", answerExplain: "설명적 조사는 변수 간의 인과관계를 규명하는 것을 목적으로 한다.", wrongAnswers: ["① 탐색적 조사", "② 기술적 조사", "④ 예측적 조사", "⑤ 평가적 조사"] }
+                        ]
+                    },
+                    {
+                        name: '표본추출의 방법',
+                        concept: `<strong>표본추출의 종류</strong>
+                        <ul>
+                        <li><strong>확률표본추출:</strong> 모집단의 각 원소가 선택될 확률이 동등</li>
+                        <li><strong>비확률표본추출:</strong> 표본을 선택하는 확률이 같지 않음</li>
+                        </ul>
+                        <strong>확률표본추출 방법</strong>
+                        <ul>
+                        <li><strong>단순무작위표본:</strong> 무작위로 선택</li>
+                        <li><strong>계층표본:</strong> 계층별로 나누어 선택</li>
+                        <li><strong>집단표본:</strong> 집단 단위로 선택</li>
+                        <li><strong>계통표본:</strong> 일정한 간격으로 선택</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2022, num: 50, text: "확률표본추출의 특징으로 옳은 것은?", answer: "①", answerExplain: "확률표본추출은 모집단의 각 원소가 표본에 선택될 확률이 같다.", wrongAnswers: ["② 연구자의 편의적 선택", "③ 통계적 추정 불가능", "④ 비용이 매우 저렴", "⑤ 속도가 매우 빠르다"] }
+                        ]
+                    }
+                ]
+            },
+            '1-3': {
+                title: '🔍 심리학 개론',
+                units: [
+                    {
+                        name: '기본 개념',
+                        concept: `<strong>심리학의 정의</strong><br>인간의 행동과 정신 과정을 과학적으로 연구하는 학문<br><br>
+                        <strong>심리학의 관점</strong>
+                        <ul>
+                        <li>생물학적 관점</li>
+                        <li>인지적 관점</li>
+                        <li>행동주의적 관점</li>
+                        <li>사회심리학적 관점</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 58, text: "심리학의 정의로 가장 적절한 것은?", answer: "②", answerExplain: "심리학은 인간의 행동과 정신 과정을 과학적으로 연구하는 학문이다.", wrongAnswers: ["① 인간의 성격만 연구", "③ 인간의 심리 치료만", "④ 철학과 동일", "⑤ 의학의 분과"] }
+                        ]
+                    }
+                ]
+            },
+            '2-1': {
+                title: '📋 사회복지정책과제도',
+                units: [
+                    {
+                        name: '사회복지정책의 기초',
+                        concept: `<strong>사회복지정책의 정의</strong><br>사회 문제 해결을 위해 정부가 주도적으로 펼치는 조직적 노력<br><br>
+                        <strong>사회복지정책의 특성</strong>
+                        <ul>
+                        <li>공공성: 정부가 주도</li>
+                        <li>강제성: 법적 근거 필요</li>
+                        <li>형평성: 누구나 대상</li>
+                        <li>생존권 보장: 인간다운 생활 보장</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 60, text: "사회복지정책의 특성으로 옳지 않은 것은?", answer: "④", answerExplain: "사회복지정책은 형평성을 추구하며 특정 계층만을 대상으로 하지 않는다.", wrongAnswers: ["① 공공성이 있다", "② 법적 근거가 있다", "③ 생존권 보장", "⑤ 체계적 수행"] }
+                        ]
+                    }
+                ]
+            },
+            '2-2': {
+                title: '⚖️ 사회복지법제',
+                units: [
+                    {
+                        name: '사회복지법의 개념',
+                        concept: `<strong>사회복지법의 정의</strong><br>사회 문제 해결을 위해 제정된 법률의 총칭<br><br>
+                        <strong>주요 법령</strong>
+                        <ul>
+                        <li>사회보장기본법</li>
+                        <li>국민기초생활보장법</li>
+                        <li>사회복지사업법</li>
+                        <li>장애인복지법</li>
+                        <li>노인복지법</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 65, text: "사회복지의 기본법은?", answer: "①", answerExplain: "사회보장기본법이 사회복지의 기본이 되는 법이다.", wrongAnswers: ["② 국민기초생활보장법", "③ 사회복지사업법", "④ 장애인복지법", "⑤ 노인복지법"] }
+                        ]
+                    }
+                ]
+            },
+            '3-1': {
+                title: '👥 사회복지실천론',
+                units: [
+                    {
+                        name: '사회복지실천의 기초',
+                        concept: `<strong>사회복지실천의 정의</strong><br>개인, 집단, 지역사회의 문제 해결을 위한 전문적 활동<br><br>
+                        <strong>사회복지실천의 가치</strong>
+                        <ul>
+                        <li>인간존엄성</li>
+                        <li>자기결정권</li>
+                        <li>비낙인화</li>
+                        <li>평등성</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 70, text: "사회복지실천의 핵심 가치는?", answer: "①", answerExplain: "인간존엄성은 모든 사회복지실천의 기초가 되는 핵심 가치이다.", wrongAnswers: ["② 효율성", "③ 생산성", "④ 경제성", "⑤ 속도성"] }
+                        ]
+                    }
+                ]
+            },
+            '3-2': {
+                title: '🏘️ 지역사회복지론',
+                units: [
+                    {
+                        name: '지역사회의 개념',
+                        concept: `<strong>지역사회의 정의</strong><br>일정한 지역 내에서 주민들이 공동으로 생활하는 사회단위<br><br>
+                        <strong>지역사회복지의 목표</strong>
+                        <ul>
+                        <li>지역사회의 문제 해결</li>
+                        <li>지역주민의 삶의 질 향상</li>
+                        <li>주민 역량 강화</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 75, text: "지역사회복지의 목표로 옳은 것은?", answer: "②", answerExplain: "지역사회복지는 주민 삶의 질 향상을 주요 목표로 한다.", wrongAnswers: ["① 정부 수익 증대", "③ 기업 이윤 극대화", "④ 개인 부의 축적", "⑤ 도시 확장"] }
+                        ]
+                    }
+                ]
+            },
+            '3-3': {
+                title: '🏢 사회복지행정론',
+                units: [
+                    {
+                        name: '행정의 기초',
+                        concept: `<strong>행정의 정의</strong><br>조직의 목표를 달성하기 위한 체계적 활동<br><br>
+                        <strong>행정의 기능</strong>
+                        <ul>
+                        <li>계획</li>
+                        <li>조직</li>
+                        <li>지휘</li>
+                        <li>통제</li>
+                        </ul>`,
+                        problems: [
+                            { year: 2024, num: 80, text: "행정의 기능 중 목표달성을 위한 체계수립은?", answer: "①", answerExplain: "계획은 조직의 목표를 달성하기 위해 사전에 체계를 수립하는 것이다.", wrongAnswers: ["② 조직", "③ 지휘", "④ 통제", "⑤ 평가"] }
+                        ]
+                    }
+                ]
+            }
+        };
 
-        ];
+        // ===== 함수 =====
+        let currentSubject = '1-1';
+        let currentProblem = null;
 
-        function loadRandomVideo() {
-            const randomIndex = Math.floor(Math.random() * videos.length);
-            const selectedVideo = videos[randomIndex];
-            
-            const remainingVideos = videos.filter((v, idx) => idx !== randomIndex);
-            const shuffledRemaining = remainingVideos.sort(() => Math.random() - 0.5);
-            const playlist = [selectedVideo.id, ...shuffledRemaining.map(v => v.id)].join(',');
-            
-            const embedUrl = `https://www.youtube.com/embed/${selectedVideo.id}?rel=0&playlist=${playlist}&autoplay=1`;
-            
-            document.getElementById('videoFrame').src = embedUrl;
+        // 섹션 토글
+        function toggleSection(element) {
+            const arrow = element.querySelector('.expand-arrow');
+            const list = element.nextElementSibling;
+
+            arrow.classList.toggle('collapsed');
+            list.classList.toggle('collapsed');
         }
 
-        function playSpecificVideo(index) {
-            const selectedVideo = videos[index];
+        // 콘텐츠 전환
+        function switchContent(subjectId, element) {
+            currentSubject = subjectId;
             
-            const remainingVideos = videos.filter((v, idx) => idx !== index);
-            const shuffledRemaining = remainingVideos.sort(() => Math.random() - 0.5);
-            const playlist = [selectedVideo.id, ...shuffledRemaining.map(v => v.id)].join(',');
-            
-            const embedUrl = `https://www.youtube.com/embed/${selectedVideo.id}?rel=0&playlist=${playlist}&autoplay=1`;
-            
-            document.getElementById('videoFrame').src = embedUrl;
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // 메뉴 활성화
+            document.querySelectorAll('.subject-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // 모바일 사이드바 닫기
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+
+            renderContent(subjectId);
         }
 
-        function initializePlaylist() {
-            const videoGridEl = document.getElementById('videoGrid');
-            const videoCountEl = document.getElementById('videoCount');
+        // 콘텐츠 렌더링
+        function renderContent(subjectId) {
+            const data = courseData[subjectId];
+            const container = document.getElementById('contentContainer');
             
-            videoCountEl.textContent = videos.length;
+            document.querySelector('.page-title').textContent = data.title;
             
-            videos.forEach((video, idx) => {
+            container.innerHTML = '';
+
+            data.units.forEach((unit, unitIdx) => {
                 const card = document.createElement('div');
-                card.className = 'video-card';
-                card.onclick = () => playSpecificVideo(idx);
-                
-                card.innerHTML = `
-                    <div class="video-thumbnail">
-                        <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
-                        <div class="play-overlay"></div>
+                card.className = 'unit-card';
+
+                const header = document.createElement('div');
+                header.className = 'card-header';
+                header.innerHTML = `
+                    <div style="flex: 1;">
+                        <div class="card-title">${unit.name}</div>
                     </div>
-                    <div class="video-info">
-                        <div class="video-title">${video.title}</div>
+                    <div class="card-meta">
+                        <span class="badge">${unit.problems.length}개</span>
+                        <div class="card-toggle">▼</div>
                     </div>
                 `;
-                
-                videoGridEl.appendChild(card);
+
+                header.addEventListener('click', () => {
+                    const content = card.querySelector('.card-content');
+                    const toggle = header.querySelector('.card-toggle');
+                    
+                    content.classList.toggle('show');
+                    toggle.classList.toggle('collapsed');
+                });
+
+                card.appendChild(header);
+
+                const content = document.createElement('div');
+                content.className = 'card-content show';
+
+                // 개념
+                const conceptDiv = document.createElement('div');
+                conceptDiv.className = 'concept-section';
+                conceptDiv.innerHTML = `
+                    <div class="concept-title">📚 개념 정리</div>
+                    <div class="concept-content">${unit.concept}</div>
+                `;
+                content.appendChild(conceptDiv);
+
+                // 문제
+                if (unit.problems.length > 0) {
+                    const problemsDiv = document.createElement('div');
+                    problemsDiv.className = 'problems-section';
+                    problemsDiv.innerHTML = '<div class="problems-title">🔍 기출문제</div>';
+
+                    unit.problems.forEach((problem, problemIdx) => {
+                        const problemItem = document.createElement('div');
+                        problemItem.className = 'problem-item';
+                        problemItem.innerHTML = `
+                            <div class="problem-info">
+                                <span class="problem-year-badge">${problem.year}년 ${problem.num}번</span>
+                                <div class="problem-text">${problem.text}</div>
+                            </div>
+                            <div class="problem-arrow">→</div>
+                        `;
+
+                        problemItem.addEventListener('click', () => {
+                            openProblem(problem);
+                        });
+
+                        problemsDiv.appendChild(problemItem);
+                    });
+
+                    content.appendChild(problemsDiv);
+                }
+
+                card.appendChild(content);
+                container.appendChild(card);
             });
         }
 
-        window.onload = function() {
-            initializePlaylist();
-            loadRandomVideo();
-        };
+        // 문제 열기
+        function openProblem(problem) {
+            currentProblem = problem;
+            document.getElementById('modalTitle').textContent = problem.text;
+            document.getElementById('modalMeta').innerHTML = `
+                <span>${problem.year}년 ${problem.num}번</span>
+            `;
+            document.getElementById('problemStatement').textContent = problem.text;
+            document.getElementById('answerSection').classList.remove('show');
+            document.getElementById('answerBtn').style.display = 'block';
+
+            const choicesContainer = document.getElementById('choicesContainer');
+            choicesContainer.innerHTML = '';
+
+            ['①', '②', '③', '④', '⑤'].forEach(choice => {
+                const div = document.createElement('div');
+                div.className = 'choice';
+                div.textContent = choice;
+                div.addEventListener('click', () => {
+                    document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+                    div.classList.add('selected');
+                });
+                choicesContainer.appendChild(div);
+            });
+
+            document.getElementById('problemModal').classList.add('active');
+        }
+
+        // 정답 보기
+        function showAnswer() {
+            const p = currentProblem;
+            document.getElementById('answerContent').innerHTML = `
+                <strong>정답: ${p.answer}</strong><br><br>
+                <strong>해설:</strong> ${p.answerExplain}
+            `;
+
+            let wrongHTML = '';
+            p.wrongAnswers.forEach(wrong => {
+                wrongHTML += `<div class="wrong-item">• ${wrong}</div>`;
+            });
+            document.getElementById('wrongChoicesContent').innerHTML = wrongHTML;
+            document.getElementById('answerSection').classList.add('show');
+            document.getElementById('answerBtn').style.display = 'none';
+        }
+
+        // 문제 닫기
+        function closeProblem() {
+            document.getElementById('problemModal').classList.remove('active');
+        }
+
+        // 메뉴 토글 (모바일)
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // 다크모드
+        document.getElementById('darkToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // 모달 클릭 시 닫기
+        document.getElementById('problemModal').addEventListener('click', (e) => {
+            if (e.target.id === 'problemModal') {
+                closeProblem();
+            }
+        });
+
+        // 초기화
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        window.addEventListener('load', () => {
+            renderContent('1-1');
+        });
+
+        // 윈도우 크기 변경 시
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        });
     </script>
 </body>
 </html>
