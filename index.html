@@ -42,12 +42,12 @@
                     </div>
                     <div>
                         <h1 class="text-base font-bold text-gray-800">🎵 Overnight Live</h1>
-                        <p class="text-xs text-teal-600">실시간 조회수 추적</p>
+                        <p class="text-xs text-teal-600">11/8 PM7 → 11/9 AM7</p>
                     </div>
                 </div>
                 
                 <!-- 새로고침 버튼 -->
-                <button onclick="manualRefresh()" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all">
+                <button onclick="manualRefresh()" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm md:text-base">
                     🔄 새로고침
                 </button>
             </div>
@@ -65,59 +65,35 @@
             <!-- 상태 표시 -->
             <div class="grid grid-cols-3 gap-2 mb-3">
                 <div class="bg-gradient-to-br from-teal-50 to-cyan-50 border-2 border-teal-300 rounded-lg p-2 text-center shadow">
-                    <div class="text-xs text-teal-700 font-semibold">마지막 업데이트</div>
-                    <div class="text-sm font-black text-teal-600" id="lastUpdate">--:--</div>
+                    <div class="text-xs text-teal-700 font-semibold">업데이트</div>
+                    <div class="text-xs md:text-sm font-black text-teal-600" id="lastUpdate">--:--</div>
                 </div>
                 <div class="bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-300 rounded-lg p-2 text-center shadow">
                     <div class="text-xs text-emerald-700 font-semibold">영상 수</div>
-                    <div class="text-sm font-black text-emerald-600" id="videoCount">0</div>
+                    <div class="text-xs md:text-sm font-black text-emerald-600" id="videoCount">20</div>
                 </div>
                 <div class="bg-gradient-to-br from-rose-50 to-pink-50 border-2 border-rose-300 rounded-lg p-2 text-center shadow">
                     <div class="text-xs text-rose-700 font-semibold">총 증가</div>
-                    <div class="text-sm font-black text-rose-600" id="totalChange">0</div>
+                    <div class="text-xs md:text-sm font-black text-rose-600" id="totalChange">21,639</div>
                 </div>
             </div>
 
             <!-- 연결 상태 -->
             <div class="text-center">
-                <span id="connectionStatus" class="text-xs text-gray-500">준비 중...</span>
+                <span id="connectionStatus" class="text-xs text-gray-500">준비 완료</span>
             </div>
         </div>
     </div>
 
     <!-- 메인 컨텐츠 -->
     <div class="p-4">
-        <!-- 데스크톱: 2단 레이아웃 / 모바일: 세로 스택 -->
+        <!-- PC: 좌우 2단 / 모바일: 세로 스택 -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <!-- 왼쪽: 트래커 -->
-            <div>
-                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg mb-4">
-                    <h2 class="text-lg font-bold text-gray-800 mb-2">📊 조회수 추적</h2>
-                    <p class="text-xs text-gray-600">전날 PM 7시 → 오늘 AM 7시 변화 + 실시간 조회수</p>
-                </div>
-
-                <!-- 카드 뷰 -->
-                <div id="cardView" class="space-y-3"></div>
-                
-                <!-- 테이블 뷰 -->
-                <div id="tableView" class="hidden"></div>
-
-                <!-- 버튼들 -->
-                <div class="mt-6 grid grid-cols-2 gap-2">
-                    <button onclick="loadPlaylist()" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                        📋 재생목록 로드
-                    </button>
-                    <button onclick="saveToFirebase()" class="bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                        💾 Firebase 저장
-                    </button>
-                </div>
-            </div>
-
-            <!-- 오른쪽: 재생목록 플레이어 -->
-            <div class="lg:sticky lg:top-24 lg:self-start">
-                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg mb-4">
-                    <h2 class="text-lg font-bold text-gray-800 mb-2">🎵 현재 재생목록</h2>
-                    <p class="text-xs text-gray-600 mb-3">Overnight JangMinHo 재생목록</p>
+            <!-- 왼쪽: 재생목록 플레이어 (모바일에서는 위) -->
+            <div class="lg:sticky lg:top-24 lg:self-start order-1 lg:order-1">
+                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg">
+                    <h2 class="text-lg font-bold text-gray-800 mb-2">🎵 재생목록</h2>
+                    <p class="text-xs text-gray-600 mb-3">Overnight JangMinHo</p>
                     
                     <!-- YouTube 플레이어 -->
                     <div class="relative" style="padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; box-shadow: 0 10px 30px rgba(45, 212, 191, 0.3);">
@@ -136,13 +112,34 @@
                     </button>
                 </div>
             </div>
+
+            <!-- 오른쪽: 조회수 추적 (모바일에서는 아래) -->
+            <div class="order-2 lg:order-2">
+                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg mb-4">
+                    <h2 class="text-lg font-bold text-gray-800 mb-2">📊 조회수 추적</h2>
+                    <p class="text-xs text-gray-600">8일 PM7 → 9일 AM7 변화량 + 실시간</p>
+                </div>
+
+                <!-- 카드 뷰 -->
+                <div id="cardView" class="space-y-3"></div>
+                
+                <!-- 테이블 뷰 -->
+                <div id="tableView" class="hidden"></div>
+
+                <!-- Firebase 저장 버튼 -->
+                <div class="mt-6">
+                    <button onclick="saveToFirebase()" class="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        💾 Firebase 저장
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, get, query, orderByChild, limitToLast } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         // Firebase 설정
         const firebaseConfig = {
@@ -166,8 +163,54 @@
 
         let currentViewMode = 'card';
         let videosData = [];
-        let previousPM7Data = {}; // 전날 PM 7시 데이터
-        let currentAM7Data = {}; // 오늘 AM 7시 데이터
+
+        // 초기 고정 데이터 (11월 8일 PM7 / 11월 9일 AM7)
+        const INITIAL_DATA = {
+            '8PM7': {
+                '홀로된 사랑 (안무)': 60065,
+                '내게 남은 사랑을 드릴게요(OM)': 81065,
+                '장민호유튜브 시작 EP.00': 31225,
+                '장하다 장민호 EP.01': 33629,
+                '홀로된사랑(OM )': 81037,
+                '홀로된 사랑': 58753,
+                '한계령': 93128,
+                '한계령 (OM )': 139011,
+                '내 마음에 비친 내 모습': 148768,
+                '내 곁에 있어주 | 아외녹음실': 351825,
+                '내 곁에 있어주 (OM)': 149258,
+                '내 곁에 있어주': 41155,
+                '내게 남은 사랑을 드릴게요': 120249,
+                '그저 친구': 102779,
+                '그날': 78698,
+                '사랑의 티키타카 수트댄스': 803843,
+                '대가수와 대형견의 만남': 24456,
+                '대자연에서 춤는 홀로된 사랑': 34153,
+                '잊으리오': 337477,
+                '내 이름 아시죠': 8896970
+            },
+            '9AM7': {
+                '홀로된 사랑 (안무)': 61359,
+                '내게 남은 사랑을 드릴게요(OM)': 82475,
+                '장민호유튜브 시작 EP.00': 31659,
+                '장하다 장민호 EP.01': 34381,
+                '홀로된사랑(OM )': 82253,
+                '홀로된 사랑': 59218,
+                '한계령': 93548,
+                '한계령 (OM )': 140479,
+                '내 마음에 비친 내 모습': 150022,
+                '내 곁에 있어주 | 아외녹음실': 352192,
+                '내 곁에 있어주 (OM)': 150533,
+                '내 곁에 있어주': 41450,
+                '내게 남은 사랑을 드릴게요': 121686,
+                '그저 친구': 103670,
+                '그날': 79429,
+                '사랑의 티키타카 수트댄스': 804213,
+                '대가수와 대형견의 만남': 25490,
+                '대자연에서 춤는 홀로된 사랑': 36839,
+                '잊으리오': 338705,
+                '내 이름 아시죠': 8898779
+            }
+        };
 
         // 상태 업데이트
         function updateStatus(message, color = 'text-teal-600') {
@@ -183,16 +226,18 @@
             return `${hours}:${minutes}`;
         }
 
-        // 날짜 키 생성 (YYYYMMDD-HH 형식)
-        function getDateKey(date, hour) {
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            const h = String(hour).padStart(2, '0');
-            return `${y}${m}${d}-${h}`;
+        // 제목 정규화 (비교용)
+        function normalizeTitle(title) {
+            return title.toLowerCase()
+                .replace(/\s+/g, '')
+                .replace(/[()]/g, '')
+                .replace(/official/gi, '')
+                .replace(/mv/gi, '')
+                .replace(/장민호/g, '')
+                .replace(/jangminho/gi, '');
         }
 
-        // 재생목록 비디오 ID 가져오기
+        // 재생목록 비디오 가져오기
         async function fetchPlaylistVideos() {
             updateStatus('재생목록 로딩 중...', 'text-blue-600 pulse');
             
@@ -206,13 +251,10 @@
                 }
                 
                 const data = await response.json();
-                const videoIds = data.items.map(item => item.snippet.resourceId.videoId);
-                
-                return videoIds;
+                return data.items;
             } catch (error) {
                 console.error('재생목록 로딩 오류:', error);
                 updateStatus('❌ 재생목록 로딩 실패', 'text-red-600');
-                alert('재생목록 로딩 실패: ' + error.message);
                 return [];
             }
         }
@@ -231,52 +273,69 @@
                 }
                 
                 const data = await response.json();
-                
-                const videos = data.items.map(item => {
-                    const videoId = item.id;
-                    const realtime = parseInt(item.statistics.viewCount);
-                    const pm7 = previousPM7Data[videoId] || realtime;
-                    const am7 = currentAM7Data[videoId] || realtime;
-                    const change = am7 - pm7;
-                    
-                    return {
-                        videoId: videoId,
-                        title: item.snippet.title,
-                        previousPM7: pm7,      // 전날 PM 7시
-                        currentAM7: am7,       // 오늘 AM 7시
-                        realtime: realtime,    // 실시간
-                        change: change,        // 증감 (AM7 - PM7)
-                        timestamp: new Date().toISOString()
-                    };
-                });
-                
-                return videos;
+                return data.items;
             } catch (error) {
                 console.error('조회수 수집 오류:', error);
                 updateStatus('❌ 조회수 수집 실패', 'text-red-600');
-                alert('조회수 수집 실패: ' + error.message);
                 return [];
             }
         }
 
         // 전체 데이터 로드
         async function loadPlaylistData() {
-            const videoIds = await fetchPlaylistVideos();
+            const playlistItems = await fetchPlaylistVideos();
             
-            if (videoIds.length === 0) {
+            if (playlistItems.length === 0) {
                 return;
             }
             
-            const stats = await fetchVideoStats(videoIds);
+            const videoIds = playlistItems.map(item => item.snippet.resourceId.videoId);
+            const videoStats = await fetchVideoStats(videoIds);
             
-            if (stats.length > 0) {
-                videosData = stats;
+            if (videoStats.length > 0) {
+                videosData = videoStats.map(item => {
+                    const videoId = item.id;
+                    const title = item.snippet.title;
+                    const realtime = parseInt(item.statistics.viewCount);
+                    
+                    // 고정 데이터에서 매칭되는 제목 찾기
+                    let pm7 = null;
+                    let am7 = null;
+                    
+                    const normalizedTitle = normalizeTitle(title);
+                    
+                    for (const [key, value] of Object.entries(INITIAL_DATA['8PM7'])) {
+                        if (normalizeTitle(key).includes(normalizedTitle) || normalizedTitle.includes(normalizeTitle(key))) {
+                            pm7 = value;
+                            am7 = INITIAL_DATA['9AM7'][key];
+                            break;
+                        }
+                    }
+                    
+                    // 매칭 실패 시 현재 조회수 사용
+                    if (pm7 === null) {
+                        pm7 = realtime;
+                        am7 = realtime;
+                    }
+                    
+                    const change = am7 - pm7;
+                    
+                    return {
+                        videoId: videoId,
+                        title: title,
+                        pm7: pm7,           // 8일 PM 7시 (고정)
+                        am7: am7,           // 9일 AM 7시 (고정)
+                        realtime: realtime, // 실시간
+                        change: change,     // 증감 (AM7 - PM7)
+                        timestamp: new Date().toISOString()
+                    };
+                });
                 
                 // 영상 수 업데이트
-                document.getElementById('videoCount').textContent = stats.length;
+                document.getElementById('videoCount').textContent = videosData.length;
                 
                 // 총 증가량 계산
-                const totalChange = stats.reduce((sum, v) => sum + v.change, 0);
+                const totalChange = videosData.reduce((sum, v) => sum + v.change, 0);
                 document.getElementById('totalChange').textContent = totalChange.toLocaleString();
                 
                 // 마지막 업데이트 시간
@@ -304,16 +363,16 @@
             const cardView = document.getElementById('cardView');
             
             cardView.innerHTML = videos.map((video, index) => {
-                const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+                const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                 const changeColor = video.change > 0 ? 'text-emerald-600' : video.change < 0 ? 'text-red-600' : 'text-gray-600';
                 const changeSign = video.change > 0 ? '+' : '';
                 
                 return `
-                    <div class="glass-effect border-2 border-teal-200 rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all">
-                        <div class="flex items-start gap-3 mb-3">
-                            <div class="text-2xl flex-shrink-0">${rankIcon}</div>
+                    <div class="glass-effect border-2 border-teal-200 rounded-2xl p-3 md:p-4 shadow-lg hover:shadow-xl transition-all">
+                        <div class="flex items-start gap-2 md:gap-3 mb-3">
+                            <div class="text-xl md:text-2xl flex-shrink-0">${rankIcon}</div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-gray-800 text-sm mb-1 line-clamp-2">${video.title}</h3>
+                                <h3 class="font-bold text-gray-800 text-sm md:text-base mb-1 line-clamp-2">${video.title}</h3>
                                 <a href="https://www.youtube.com/watch?v=${video.videoId}" target="_blank" class="text-xs text-teal-600 hover:text-teal-700 underline">
                                     YouTube에서 보기 →
                                 </a>
@@ -321,24 +380,24 @@
                         </div>
 
                         <div class="grid grid-cols-3 gap-2 mb-3">
-                            <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-3 border-2 border-purple-200 shadow text-center">
-                                <div class="text-xs text-purple-600 mb-1 font-semibold">전날 PM7</div>
-                                <div class="text-sm font-bold text-purple-700">${video.previousPM7.toLocaleString()}</div>
+                            <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-lg p-2 md:p-3 border-2 border-purple-200 shadow text-center">
+                                <div class="text-xs text-purple-600 mb-1 font-semibold">8일 PM7</div>
+                                <div class="text-xs md:text-sm font-bold text-purple-700">${video.pm7.toLocaleString()}</div>
                             </div>
-                            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-3 border-2 border-blue-200 shadow text-center">
-                                <div class="text-xs text-blue-600 mb-1 font-semibold">오늘 AM7</div>
-                                <div class="text-sm font-bold text-blue-700">${video.currentAM7.toLocaleString()}</div>
+                            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-2 md:p-3 border-2 border-blue-200 shadow text-center">
+                                <div class="text-xs text-blue-600 mb-1 font-semibold">9일 AM7</div>
+                                <div class="text-xs md:text-sm font-bold text-blue-700">${video.am7.toLocaleString()}</div>
                             </div>
-                            <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-3 border-2 border-emerald-300 shadow text-center">
+                            <div class="bg-gradient-to-br from-emerald-50 to-green-50 rounded-lg p-2 md:p-3 border-2 border-emerald-300 shadow text-center">
                                 <div class="text-xs text-emerald-600 mb-1 font-semibold">증감</div>
-                                <div class="text-sm font-bold ${changeColor}">${changeSign}${video.change.toLocaleString()}</div>
+                                <div class="text-xs md:text-sm font-bold ${changeColor}">${changeSign}${video.change.toLocaleString()}</div>
                             </div>
                         </div>
 
-                        <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-4 border-2 border-teal-300 shadow">
+                        <div class="bg-gradient-to-br from-teal-50 to-cyan-50 rounded-xl p-3 md:p-4 border-2 border-teal-300 shadow">
                             <div class="text-center">
                                 <div class="text-xs font-semibold text-gray-600 mb-2">실시간 조회수</div>
-                                <div class="text-3xl font-black gradient-text">
+                                <div class="text-2xl md:text-3xl font-black gradient-text">
                                     ${video.realtime.toLocaleString()}
                                 </div>
                             </div>
@@ -359,33 +418,33 @@
                 <div class="glass-effect border-2 border-teal-200 rounded-2xl overflow-hidden shadow-lg">
                     <div class="bg-gradient-to-r from-teal-100 to-cyan-100 border-b-2 border-teal-300 p-3 grid grid-cols-5 gap-2 text-xs font-bold text-gray-700">
                         <div>영상명</div>
-                        <div class="text-right">전날 PM7</div>
-                        <div class="text-right">오늘 AM7</div>
-                        <div class="text-right text-teal-700">증감</div>
-                        <div class="text-right text-purple-700">실시간</div>
+                        <div class="text-right">8일 PM7</div>
+                        <div class="text-right">9일 AM7</div>
+                        <div class="text-right text-emerald-700">증감</div>
+                        <div class="text-right text-teal-700">실시간</div>
                     </div>
                     <div>
                         ${videos.map((video, index) => {
-                            const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : index + 1;
+                            const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
                             const changeColor = video.change > 0 ? 'text-emerald-700' : video.change < 0 ? 'text-red-700' : 'text-gray-700';
                             const changeSign = video.change > 0 ? '+' : '';
                             
                             return `
-                                <div class="p-3 border-b border-teal-100 ${index < 3 ? 'bg-teal-50/50' : 'bg-white/50'} hover:bg-teal-50 transition-all">
+                                <div class="p-2 md:p-3 border-b border-teal-100 ${index < 3 ? 'bg-teal-50/50' : 'bg-white/50'} hover:bg-teal-50 transition-all">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <span class="text-lg">${rankIcon}</span>
-                                        <a href="https://www.youtube.com/watch?v=${video.videoId}" target="_blank" class="text-gray-800 text-sm font-semibold flex-1 line-clamp-1 hover:text-teal-600">
+                                        <span class="text-base md:text-lg">${rankIcon}</span>
+                                        <a href="https://www.youtube.com/watch?v=${video.videoId}" target="_blank" class="text-gray-800 text-xs md:text-sm font-semibold flex-1 line-clamp-1 hover:text-teal-600">
                                             ${video.title}
                                         </a>
                                     </div>
                                     <div class="grid grid-cols-4 gap-2 text-xs">
                                         <div class="text-right">
-                                            <div class="text-purple-600 mb-0.5 font-semibold">전날 PM7</div>
-                                            <div class="text-purple-700 font-mono font-bold">${video.previousPM7.toLocaleString()}</div>
+                                            <div class="text-purple-600 mb-0.5 font-semibold">8일 PM7</div>
+                                            <div class="text-purple-700 font-mono font-bold">${video.pm7.toLocaleString()}</div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-blue-600 mb-0.5 font-semibold">오늘 AM7</div>
-                                            <div class="text-blue-700 font-mono font-bold">${video.currentAM7.toLocaleString()}</div>
+                                            <div class="text-blue-600 mb-0.5 font-semibold">9일 AM7</div>
+                                            <div class="text-blue-700 font-mono font-bold">${video.am7.toLocaleString()}</div>
                                         </div>
                                         <div class="text-right">
                                             <div class="${changeColor} mb-0.5 font-semibold">증감</div>
@@ -393,7 +452,7 @@
                                         </div>
                                         <div class="text-right">
                                             <div class="text-teal-600 mb-0.5 font-semibold">실시간</div>
-                                            <div class="text-teal-700 font-mono font-black text-base">${video.realtime.toLocaleString()}</div>
+                                            <div class="text-teal-700 font-mono font-black">${video.realtime.toLocaleString()}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -429,64 +488,28 @@
 
         // 수동 새로고침
         window.manualRefresh = async function() {
-            if (videosData.length === 0) {
-                alert('먼저 "재생목록 로드" 버튼을 클릭하세요!');
-                return;
-            }
-            
             await loadPlaylistData();
         };
 
-        // 재생목록 로드
-        window.loadPlaylist = async function() {
-            await loadPlaylistData();
-        };
-
-        // Firebase 저장 (시간대별로 저장)
+        // Firebase 저장
         window.saveToFirebase = async function() {
             if (videosData.length === 0) {
-                alert('저장할 데이터가 없습니다. 먼저 재생목록을 로드하세요.');
+                alert('저장할 데이터가 없습니다. 먼저 새로고침 버튼을 클릭하세요.');
                 return;
             }
             
             try {
                 const now = new Date();
-                const currentHour = now.getHours();
-                
-                // 현재 시간대 키 생성
-                const dateKey = getDateKey(now, currentHour);
                 
                 const dataToSave = {
                     timestamp: now.toISOString(),
-                    hour: currentHour,
-                    dateKey: dateKey,
-                    videos: videosData.map(v => ({
-                        videoId: v.videoId,
-                        title: v.title,
-                        viewCount: v.realtime
-                    }))
+                    videos: videosData
                 };
                 
-                // 시간대별로 저장
-                await set(ref(database, `overnight/hourly/${dateKey}`), dataToSave);
-                
-                // 최신 데이터도 저장
+                await set(ref(database, 'overnight/snapshots/' + Date.now()), dataToSave);
                 await set(ref(database, 'overnight/latest'), dataToSave);
                 
                 updateStatus('✓ Firebase 저장 완료', 'text-emerald-600');
-                
-                // 현재가 AM 7시면 currentAM7Data에 저장
-                if (currentHour === 7) {
-                    videosData.forEach(v => {
-                        currentAM7Data[v.videoId] = v.realtime;
-                    });
-                }
-                // 현재가 PM 7시면 previousPM7Data에 저장
-                if (currentHour === 19) {
-                    videosData.forEach(v => {
-                        previousPM7Data[v.videoId] = v.realtime;
-                    });
-                }
                 
                 setTimeout(() => {
                     updateStatus('✓ 준비 완료', 'text-teal-600');
@@ -502,53 +525,13 @@
             window.open(`https://www.youtube.com/playlist?list=${PLAYLIST_ID}`, '_blank');
         };
 
-        // Firebase에서 특정 시간대 데이터 불러오기
-        async function loadTimeSpecificData() {
-            try {
-                const now = new Date();
-                
-                // 전날 PM 7시 데이터 로드
-                const yesterday = new Date(now);
-                yesterday.setDate(yesterday.getDate() - 1);
-                const pm7Key = getDateKey(yesterday, 19);
-                
-                const pm7Snapshot = await get(ref(database, `overnight/hourly/${pm7Key}`));
-                if (pm7Snapshot.exists()) {
-                    const data = pm7Snapshot.val();
-                    if (data.videos) {
-                        data.videos.forEach(v => {
-                            previousPM7Data[v.videoId] = v.viewCount;
-                        });
-                        console.log('전날 PM 7시 데이터 로드 완료');
-                    }
-                }
-                
-                // 오늘 AM 7시 데이터 로드
-                const am7Key = getDateKey(now, 7);
-                
-                const am7Snapshot = await get(ref(database, `overnight/hourly/${am7Key}`));
-                if (am7Snapshot.exists()) {
-                    const data = am7Snapshot.val();
-                    if (data.videos) {
-                        data.videos.forEach(v => {
-                            currentAM7Data[v.videoId] = v.viewCount;
-                        });
-                        console.log('오늘 AM 7시 데이터 로드 완료');
-                    }
-                }
-            } catch (error) {
-                console.error('시간대별 데이터 로드 오류:', error);
-            }
-        }
-
         // 초기화
         async function initialize() {
             updateStatus('초기화 중...', 'text-blue-600');
-            await loadTimeSpecificData();
-            updateStatus('✓ 준비 완료', 'text-emerald-600');
+            await loadPlaylistData();
         }
 
-        // 페이지 로드 시 초기화
+        // 페이지 로드 시 자동 실행
         initialize();
     </script>
 </body>
