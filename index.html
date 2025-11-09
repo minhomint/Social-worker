@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Overnight JangMinHo Live Tracker</title>
+    <title>🎵 Overnight JangMinHo Live </title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -27,14 +26,6 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: .5; }
-        }
-        .file-upload-zone {
-            border: 2px dashed #14b8a6;
-            transition: all 0.3s;
-        }
-        .file-upload-zone:hover {
-            border-color: #0891b2;
-            background: rgba(20, 184, 166, 0.05);
         }
     </style>
 </head>
@@ -100,60 +91,28 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <!-- 왼쪽: 재생목록 플레이어 (모바일에서는 위) -->
             <div class="lg:sticky lg:top-24 lg:self-start order-1 lg:order-1">
-                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg mb-4">
+                <div class="glass-effect border-2 border-teal-300 rounded-2xl p-4 shadow-lg">
                     <h2 class="text-lg font-bold text-gray-800 mb-2">🎵 재생목록</h2>
                     <p class="text-xs text-gray-600 mb-3">Overnight JangMinHo</p>
                     
                     <!-- YouTube 플레이어 -->
-                    <div id="player-container" class="relative bg-gray-900 rounded-2xl overflow-hidden" style="padding-bottom: 56.25%; height: 0;">
-                        <div class="absolute inset-0 flex items-center justify-center text-white">
-                            <div class="text-center">
-                                <div class="pulse text-4xl mb-2">🎵</div>
-                                <p class="text-sm">플레이어 로딩 중...</p>
-                            </div>
-                        </div>
+                    <div class="relative" style="padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; box-shadow: 0 10px 30px rgba(45, 212, 191, 0.3);">
+                        <div id="player" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
                     </div>
 
                     <!-- 플레이어 컨트롤 -->
-                    <div class="mt-3 flex gap-2">
-                        <button onclick="restartPlayer()" class="flex-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold py-2 px-3 rounded-lg shadow hover:shadow-lg transition-all text-sm">
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="restartPlayer()" class="flex-1 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
                             🔄 플레이어 재시작
                         </button>
-                        <button onclick="toggleMute()" class="bg-gradient-to-r from-purple-500 to-violet-500 text-white font-bold py-2 px-3 rounded-lg shadow hover:shadow-lg transition-all text-sm">
+                        <button onclick="toggleMute()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
                             🔇 음소거
                         </button>
                     </div>
-                    <p class="text-xs text-gray-500 mt-2 text-center">※ 자동재생이 멈추면 재시작 버튼을 눌러주세요</p>
-                </div>
-
-                <!-- 엑셀 데이터 관리 (관리자용) -->
-                <div class="glass-effect border-2 border-purple-300 rounded-2xl p-4 shadow-lg">
-                    <h2 class="text-lg font-bold text-gray-800 mb-2">📊 데이터 관리 (관리자)</h2>
-                    <p class="text-xs text-gray-600 mb-3">PM7/AM7 조회수 엑셀 관리</p>
                     
-                    <!-- 엑셀 업로드 -->
-                    <div class="file-upload-zone rounded-xl p-4 mb-3 text-center cursor-pointer" onclick="document.getElementById('excelFile').click()">
-                        <input type="file" id="excelFile" accept=".xlsx,.xls" class="hidden" onchange="handleExcelUpload(event)">
-                        <svg class="w-12 h-12 mx-auto text-teal-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                        </svg>
-                        <p class="text-sm font-semibold text-gray-700">엑셀 파일 업로드</p>
-                        <p class="text-xs text-gray-500 mt-1">영상명 | 8PM7 | 9AM7 형식</p>
+                    <div class="mt-2 text-center">
+                        <span id="playerStatus" class="text-xs text-gray-500">플레이어 로딩 중...</span>
                     </div>
-                    
-                    <div id="uploadStatus" class="text-xs text-center text-gray-500 mb-3">파일을 선택해주세요</div>
-
-                    <!-- 현재 데이터 다운로드 -->
-                    <button onclick="downloadExcelTemplate()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all mb-2">
-                        📥 현재 데이터 엑셀로 저장
-                    </button>
-
-                    <!-- Firebase 저장 (비밀번호 필요) -->
-                    <button onclick="saveToFirebaseWithAuth()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all">
-                        🔒 Firebase 저장 (관리자)
-                    </button>
-                    
-                    <p class="text-xs text-gray-500 mt-2 text-center">※ Firebase 저장은 관리자 비밀번호가 필요합니다</p>
                 </div>
             </div>
 
@@ -169,11 +128,18 @@
                 
                 <!-- 테이블 뷰 -->
                 <div id="tableView" class="hidden"></div>
+
+                <!-- Firebase 저장 버튼 -->
+                <div class="mt-6">
+                    <button onclick="saveToFirebase()" class="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                        💾 Firebase 저장
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- YouTube IFrame Player API -->
+    <!-- YouTube IFrame API -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <!-- Firebase SDK -->
@@ -201,46 +167,13 @@
         const YOUTUBE_API_KEY = 'AIzaSyBuoonh-2xdqGo8nQfrTEQBeNDfoL-udfU';
         const PLAYLIST_ID = 'PLfuYGpnnSBu24ryeO51pagt62smucmmGv';
 
-        // 관리자 비밀번호
-        const ADMIN_PASSWORD = '@minho0728';
-
         let currentViewMode = 'card';
         let videosData = [];
-        let player = null;
-        let playerReady = false;
-
-        // Firebase 키 이름 안전하게 변환 (Firebase는 . # $ / [ ] 문자 사용 불가)
-        function encodeFirebaseKey(key) {
-            return key
-                .replace(/\./g, '｡')  // . → ｡
-                .replace(/#/g, '＃')  // # → ＃
-                .replace(/\$/g, '＄')  // $ → ＄
-                .replace(/\//g, '／')  // / → ／
-                .replace(/\[/g, '［')  // [ → ［
-                .replace(/\]/g, '］'); // ] → ］
-        }
-
-        function decodeFirebaseKey(key) {
-            return key
-                .replace(/｡/g, '.')
-                .replace(/＃/g, '#')
-                .replace(/＄/g, '$')
-                .replace(/／/g, '/')
-                .replace(/［/g, '[')
-                .replace(/］/g, ']');
-        }
-
-        // 객체의 모든 키를 Firebase 안전 형식으로 변환
-        function encodeObjectKeys(obj) {
-            const encoded = {};
-            for (const [key, value] of Object.entries(obj)) {
-                encoded[encodeFirebaseKey(key)] = value;
-            }
-            return encoded;
-        }
+        let player;
+        let isMuted = false;
 
         // 초기 고정 데이터 (11월 8일 PM7 / 11월 9일 AM7)
-        let INITIAL_DATA = {
+        const INITIAL_DATA = {
             '8PM7': {
                 '홀로된 사랑 (안무)': 60065,
                 '내게 남은 사랑을 드릴게요(OM)': 81065,
@@ -280,50 +213,26 @@
                 '그저 친구': 103670,
                 '그날': 79429,
                 '사랑의 티키타카 수트댄스': 804213,
-                '대가수와 대형견의 만남': 25490,
+                '대가수와 대형건의 만남': 25490,
                 '대자연에서 춤는 홀로된 사랑': 36839,
                 '잊으리오': 338705,
                 '내 이름 아시죠': 8898779
             }
         };
 
-        // YouTube IFrame Player API 초기화
+        // YouTube Player 초기화
         window.onYouTubeIframeAPIReady = function() {
-            createPlayer();
-        };
-
-        function createPlayer() {
-            const container = document.getElementById('player-container');
-            
-            // 기존 내용 제거
-            container.innerHTML = '';
-            
-            // iframe을 담을 div 생성
-            const playerDiv = document.createElement('div');
-            playerDiv.id = 'youtube-player';
-            playerDiv.style.position = 'absolute';
-            playerDiv.style.top = '0';
-            playerDiv.style.left = '0';
-            playerDiv.style.width = '100%';
-            playerDiv.style.height = '100%';
-            container.appendChild(playerDiv);
-            
-            player = new YT.Player('youtube-player', {
+            player = new YT.Player('player', {
                 height: '100%',
                 width: '100%',
                 playerVars: {
-                    listType: 'playlist',
-                    list: PLAYLIST_ID,
-                    autoplay: 1,
-                    loop: 1,
-                    controls: 1,
-                    modestbranding: 1,
-                    rel: 0,
-                    showinfo: 0,
-                    iv_load_policy: 3,
-                    playsinline: 1,
-                    enablejsapi: 1,
-                    origin: window.location.origin
+                    'listType': 'playlist',
+                    'list': PLAYLIST_ID,
+                    'autoplay': 1,
+                    'loop': 1,
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'playsinline': 1
                 },
                 events: {
                     'onReady': onPlayerReady,
@@ -331,314 +240,130 @@
                     'onError': onPlayerError
                 }
             });
-        }
+        };
 
         function onPlayerReady(event) {
-            playerReady = true;
-            console.log('✅ 플레이어 준비 완료');
+            updatePlayerStatus('✓ 플레이어 준비 완료', 'text-emerald-600');
+            console.log('YouTube Player Ready');
             
-            // 자동 재생 시작
+            // 자동 재생 시도
             try {
                 event.target.playVideo();
-                event.target.setLoop(true);
-                event.target.setShuffle(false);
-                console.log('✅ 자동 재생 시작');
+                updatePlayerStatus('▶ 재생 중', 'text-blue-600');
             } catch (e) {
                 console.error('자동 재생 오류:', e);
+                updatePlayerStatus('⚠️ 재생 버튼을 눌러주세요', 'text-orange-600');
             }
-
-            // 주기적으로 재생 상태 확인 (3분마다) - 재생 중일 때는 아무것도 안 함
-            setInterval(() => {
-                if (player && playerReady) {
-                    const state = player.getPlayerState();
-                    // 재생 중(1)이 아닐 때만 재생 명령
-                    if (state !== 1) {
-                        console.log('재생 재개 시도 (상태:', state, ')');
-                        try {
-                            player.playVideo();
-                        } catch (e) {
-                            console.error('재생 재개 오류:', e);
-                        }
-                    }
-                }
-            }, 180000); // 3분
         }
 
         function onPlayerStateChange(event) {
             const states = {
-                '-1': '시작안됨',
+                '-1': '시작되지 않음',
                 '0': '종료',
-                '1': '재생중',
+                '1': '재생 중',
                 '2': '일시정지',
                 '3': '버퍼링',
-                '5': '동영상준비중'
+                '5': '동영상 신호'
             };
-            console.log('플레이어 상태:', states[event.data] || event.data);
-
-            // 종료 시 자동으로 다시 재생
-            if (event.data === YT.PlayerState.ENDED) {
+            
+            const stateText = states[event.data] || '알 수 없음';
+            console.log('Player State:', stateText);
+            
+            if (event.data === YT.PlayerState.PLAYING) {
+                updatePlayerStatus('▶ 재생 중', 'text-blue-600');
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                updatePlayerStatus('⏸ 일시정지', 'text-orange-600');
+                // 일시정지된 경우 자동으로 재개 시도
                 setTimeout(() => {
                     try {
-                        event.target.playVideo();
+                        player.playVideo();
+                        console.log('자동 재개 시도');
                     } catch (e) {
-                        console.error('재생 재시작 오류:', e);
+                        console.error('자동 재개 실패:', e);
                     }
                 }, 1000);
+            } else if (event.data === YT.PlayerState.ENDED) {
+                updatePlayerStatus('🔄 다음 영상 로딩', 'text-teal-600');
+                // 종료 시 자동으로 다시 재생
+                setTimeout(() => {
+                    try {
+                        player.playVideo();
+                        console.log('재생목록 재시작');
+                    } catch (e) {
+                        console.error('재시작 실패:', e);
+                    }
+                }, 1000);
+            } else if (event.data === YT.PlayerState.BUFFERING) {
+                updatePlayerStatus('⏳ 버퍼링 중', 'text-gray-600');
             }
         }
 
         function onPlayerError(event) {
-            console.error('플레이어 오류:', event.data);
-            const container = document.getElementById('player-container');
-            const errorMessages = {
-                2: '잘못된 매개변수',
-                5: 'HTML5 플레이어 오류',
-                100: '영상을 찾을 수 없음',
-                101: '영상 소유자가 재생을 허용하지 않음',
-                150: '영상 소유자가 재생을 허용하지 않음'
-            };
-            
-            container.innerHTML = `
-                <div class="absolute inset-0 flex items-center justify-center text-white bg-red-900/80">
-                    <div class="text-center p-4">
-                        <div class="text-4xl mb-2">⚠️</div>
-                        <p class="text-sm font-bold mb-2">플레이어 오류 발생</p>
-                        <p class="text-xs">${errorMessages[event.data] || '알 수 없는 오류'}</p>
-                        <button onclick="restartPlayer()" class="mt-3 bg-white text-red-900 px-4 py-2 rounded-lg text-xs font-bold">
-                            재시도
-                        </button>
-                    </div>
-                </div>
-            `;
+            console.error('Player Error:', event.data);
+            updatePlayerStatus('❌ 플레이어 오류', 'text-red-600');
+        }
+
+        function updatePlayerStatus(message, colorClass) {
+            const status = document.getElementById('playerStatus');
+            status.textContent = message;
+            status.className = `text-xs font-semibold ${colorClass}`;
         }
 
         // 플레이어 재시작
         window.restartPlayer = function() {
-            console.log('플레이어 재시작 요청...');
-            
-            if (player && playerReady) {
+            if (player && player.playVideo) {
                 try {
-                    player.loadPlaylist({
-                        listType: 'playlist',
-                        list: PLAYLIST_ID
-                    });
-                    player.playVideo();
-                    console.log('✅ 플레이어 재시작 완료');
-                    alert('✅ 플레이어가 재시작되었습니다.');
+                    player.stopVideo();
+                    setTimeout(() => {
+                        player.playVideo();
+                        updatePlayerStatus('🔄 재시작됨', 'text-emerald-600');
+                    }, 500);
                 } catch (e) {
-                    console.error('플레이어 재시작 오류:', e);
-                    console.log('플레이어 재생성 시도...');
-                    if (player && player.destroy) {
-                        player.destroy();
-                    }
-                    setTimeout(createPlayer, 1000);
+                    console.error('재시작 오류:', e);
+                    updatePlayerStatus('❌ 재시작 실패', 'text-red-600');
                 }
-            } else {
-                console.log('플레이어 새로 생성...');
-                createPlayer();
             }
         };
 
         // 음소거 토글
-        let isMuted = false;
         window.toggleMute = function() {
-            if (player && playerReady) {
+            if (player && player.isMuted) {
                 if (isMuted) {
                     player.unMute();
                     isMuted = false;
-                    console.log('🔊 음소거 해제');
+                    updatePlayerStatus('🔊 소리 켜짐', 'text-blue-600');
                 } else {
                     player.mute();
                     isMuted = true;
-                    console.log('🔇 음소거');
+                    updatePlayerStatus('🔇 음소거됨', 'text-gray-600');
                 }
-            } else {
-                console.log('플레이어가 준비되지 않았습니다.');
-            }
-        };
-
-        // 엑셀 파일 업로드 처리
-        window.handleExcelUpload = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.textContent = '파일 읽는 중...';
-            statusDiv.className = 'text-xs text-center text-blue-600 mb-3 font-semibold';
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-
-                    // 데이터 파싱 (첫 행은 헤더로 가정)
-                    const newData8PM7 = {};
-                    const newData9AM7 = {};
-                    
-                    for (let i = 1; i < jsonData.length; i++) {
-                        const row = jsonData[i];
-                        if (row[0] && row[1] && row[2]) {
-                            const videoName = String(row[0]).trim();
-                            const pm7 = parseInt(row[1]);
-                            const am7 = parseInt(row[2]);
-                            
-                            if (videoName && !isNaN(pm7) && !isNaN(am7)) {
-                                newData8PM7[videoName] = pm7;
-                                newData9AM7[videoName] = am7;
-                            }
-                        }
-                    }
-
-                    if (Object.keys(newData8PM7).length > 0) {
-                        INITIAL_DATA['8PM7'] = newData8PM7;
-                        INITIAL_DATA['9AM7'] = newData9AM7;
-                        
-                        statusDiv.textContent = `✅ ${Object.keys(newData8PM7).length}개 영상 데이터 업로드 완료!`;
-                        statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
-                        
-                        // 자동으로 새로고침
-                        setTimeout(() => {
-                            loadPlaylistData();
-                        }, 1000);
-                    } else {
-                        throw new Error('유효한 데이터를 찾을 수 없습니다');
-                    }
-                } catch (error) {
-                    console.error('엑셀 파싱 오류:', error);
-                    statusDiv.textContent = '❌ 파일 읽기 실패: ' + error.message;
-                    statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
-                }
-            };
-
-            reader.onerror = function() {
-                statusDiv.textContent = '❌ 파일 읽기 오류';
-                statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
-            };
-
-            reader.readAsArrayBuffer(file);
-            
-            // 파일 입력 초기화
-            event.target.value = '';
-        };
-
-        // 현재 데이터를 엑셀로 다운로드
-        window.downloadExcelTemplate = function() {
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.textContent = '엑셀 파일 생성 중...';
-            statusDiv.className = 'text-xs text-center text-blue-600 mb-3 font-semibold pulse';
-
-            try {
-                const data = [['영상명', '8PM7', '9AM7', '증감']];
-                
-                for (const [title, pm7] of Object.entries(INITIAL_DATA['8PM7'])) {
-                    const am7 = INITIAL_DATA['9AM7'][title] || 0;
-                    const change = am7 - pm7;
-                    data.push([title, pm7, am7, change]);
-                }
-
-                const ws = XLSX.utils.aoa_to_sheet(data);
-                
-                // 열 너비 설정
-                ws['!cols'] = [
-                    {wch: 40},  // 영상명
-                    {wch: 12},  // 8PM7
-                    {wch: 12},  // 9AM7
-                    {wch: 12}   // 증감
-                ];
-                
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, 'Overnight Data');
-                
-                const now = new Date();
-                const filename = `overnight_data_${now.getMonth()+1}월${now.getDate()}일_${now.getHours()}시${now.getMinutes()}분.xlsx`;
-                XLSX.writeFile(wb, filename);
-                
-                statusDiv.textContent = `✅ 엑셀 저장 완료! (${filename})`;
-                statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
                 
                 setTimeout(() => {
-                    statusDiv.textContent = '파일을 선택해주세요';
-                    statusDiv.className = 'text-xs text-center text-gray-500 mb-3';
-                }, 3000);
-            } catch (error) {
-                console.error('엑셀 저장 오류:', error);
-                statusDiv.textContent = '❌ 엑셀 저장 실패: ' + error.message;
-                statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
+                    const state = player.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        updatePlayerStatus('▶ 재생 중', 'text-blue-600');
+                    }
+                }, 2000);
             }
         };
 
-        // Firebase 저장 (비밀번호 인증)
-        window.saveToFirebaseWithAuth = async function() {
-            if (videosData.length === 0) {
-                alert('저장할 데이터가 없습니다. 먼저 새로고침 버튼을 클릭하세요.');
-                return;
+        // 재생 상태 주기적 체크 (3분마다)
+        setInterval(() => {
+            if (player && player.getPlayerState) {
+                const state = player.getPlayerState();
+                console.log('정기 체크 - Player State:', state);
+                
+                // 일시정지 또는 종료 상태면 재생 시도
+                if (state === YT.PlayerState.PAUSED || state === YT.PlayerState.ENDED || state === -1) {
+                    try {
+                        player.playVideo();
+                        console.log('정기 체크 - 재생 재시작');
+                    } catch (e) {
+                        console.error('정기 체크 - 재생 실패:', e);
+                    }
+                }
             }
-
-            // 비밀번호 확인
-            const password = prompt('관리자 비밀번호를 입력하세요:');
-            if (!password) {
-                return; // 취소한 경우
-            }
-            
-            if (password !== ADMIN_PASSWORD) {
-                alert('❌ 비밀번호가 올바르지 않습니다.');
-                return;
-            }
-
-            const statusDiv = document.getElementById('uploadStatus');
-            statusDiv.textContent = 'Firebase 저장 중...';
-            statusDiv.className = 'text-xs text-center text-blue-600 mb-3 font-semibold pulse';
-
-            try {
-                const now = new Date();
-                const timestamp = Date.now();
-                
-                // Firebase 안전한 키로 변환
-                const safeInitialData = {
-                    '8PM7': encodeObjectKeys(INITIAL_DATA['8PM7']),
-                    '9AM7': encodeObjectKeys(INITIAL_DATA['9AM7'])
-                };
-                
-                const dataToSave = {
-                    timestamp: now.toISOString(),
-                    savedAt: `${now.getMonth()+1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분`,
-                    videos: videosData,
-                    initialData: safeInitialData,
-                    totalVideos: videosData.length,
-                    totalChange: videosData.filter(v => v.change !== null).reduce((sum, v) => sum + v.change, 0)
-                };
-                
-                console.log('Firebase 저장 시작...', dataToSave);
-                
-                // 스냅샷 저장
-                await set(ref(database, 'overnight/snapshots/' + timestamp), dataToSave);
-                console.log('스냅샷 저장 완료');
-                
-                // 최신 데이터로 저장
-                await set(ref(database, 'overnight/latest'), dataToSave);
-                console.log('latest 저장 완료');
-                
-                statusDiv.textContent = `✅ Firebase 저장 완료! (${dataToSave.savedAt})`;
-                statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
-                
-                updateStatus('✓ Firebase 저장 완료', 'text-emerald-600');
-                alert(`✅ Firebase 저장 완료!\n\n시간: ${dataToSave.savedAt}\n영상 수: ${videosData.length}개\n총 증가: ${dataToSave.totalChange.toLocaleString()}`);
-                
-                setTimeout(() => {
-                    statusDiv.textContent = '파일을 선택해주세요';
-                    statusDiv.className = 'text-xs text-center text-gray-500 mb-3';
-                }, 5000);
-                
-            } catch (error) {
-                console.error('Firebase 저장 오류:', error);
-                statusDiv.textContent = '❌ Firebase 저장 실패: ' + error.message;
-                statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
-                alert('❌ Firebase 저장 실패:\n' + error.message + '\n\n콘솔(F12)을 확인해주세요.');
-            }
-        };
+        }, 3 * 60 * 1000); // 3분
 
         // 상태 업데이트
         function updateStatus(message, color = 'text-teal-600') {
@@ -661,6 +386,7 @@
                 .replace(/[()|\[\]]/g, '')
                 .replace(/official/gi, '')
                 .replace(/mv/gi, '')
+                .replace(/om/gi, '')
                 .replace(/장민호/g, '')
                 .replace(/jangminho/gi, '');
         }
@@ -743,25 +469,33 @@
                         }
                     }
                     
-                    // 매칭 실패 시 null 유지
-                    const change = (pm7 !== null && am7 !== null) ? (am7 - pm7) : null;
+                    // 매칭 실패 시 null로 설정 (표에 없는 영상)
+                    const change = (pm7 !== null && am7 !== null) ? am7 - pm7 : null;
                     
                     return {
                         videoId: videoId,
                         title: title,
-                        pm7: pm7,
-                        am7: am7,
-                        realtime: realtime,
-                        change: change,
-                        matchedKey: matchedKey,
+                        pm7: pm7,           // 8일 PM 7시 (고정) - 없으면 null
+                        am7: am7,           // 9일 AM 7시 (고정) - 없으면 null
+                        realtime: realtime, // 실시간
+                        change: change,     // 증감 (AM7 - PM7) - 없으면 null
+                        matchedKey: matchedKey, // 매칭된 표 데이터 키
                         timestamp: new Date().toISOString()
                     };
+                });
+                
+                // 정렬: 증감이 있는 영상 우선, 그 다음 실시간 조회수
+                videosData.sort((a, b) => {
+                    if (a.change !== null && b.change === null) return -1;
+                    if (a.change === null && b.change !== null) return 1;
+                    if (a.change !== null && b.change !== null) return b.change - a.change;
+                    return b.realtime - a.realtime;
                 });
                 
                 // 영상 수 업데이트
                 document.getElementById('videoCount').textContent = videosData.length;
                 
-                // 총 증가량 계산
+                // 총 증가량 계산 (null 제외)
                 const totalChange = videosData
                     .filter(v => v.change !== null)
                     .reduce((sum, v) => sum + v.change, 0);
@@ -778,17 +512,10 @@
 
         // 뷰 렌더링
         function renderView() {
-            const sorted = [...videosData].sort((a, b) => {
-                if (a.change === null && b.change === null) return 0;
-                if (a.change === null) return 1;
-                if (b.change === null) return -1;
-                return b.change - a.change;
-            });
-
             if (currentViewMode === 'card') {
-                renderCardView(sorted);
+                renderCardView(videosData);
             } else {
-                renderTableView(sorted);
+                renderTableView(videosData);
             }
         }
 
@@ -798,22 +525,29 @@
             
             cardView.innerHTML = videos.map((video, index) => {
                 const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
-                const changeColor = video.change === null ? 'text-gray-400' : 
-                                   video.change > 0 ? 'text-emerald-600' : 
-                                   video.change < 0 ? 'text-red-600' : 'text-gray-600';
-                const changeSign = video.change === null ? '' : video.change > 0 ? '+' : '';
                 
+                // null 처리
                 const pm7Display = video.pm7 !== null ? video.pm7.toLocaleString() : '-';
                 const am7Display = video.am7 !== null ? video.am7.toLocaleString() : '-';
-                const changeDisplay = video.change !== null ? `${changeSign}${video.change.toLocaleString()}` : '-';
+                const changeDisplay = video.change !== null ? 
+                    (video.change > 0 ? '+' : '') + video.change.toLocaleString() : '-';
+                
+                const changeColor = video.change !== null ? 
+                    (video.change > 0 ? 'text-emerald-600' : video.change < 0 ? 'text-red-600' : 'text-gray-600') : 
+                    'text-gray-400';
+                
+                const hasTableData = video.change !== null;
+                const matchInfo = hasTableData ? 
+                    `<div class="text-xs text-teal-600 mt-1">📋 표 데이터: ${video.matchedKey}</div>` :
+                    `<div class="text-xs text-orange-600 mt-1">⚠️ 표 데이터 없음</div>`;
                 
                 return `
-                    <div class="glass-effect border-2 border-teal-200 rounded-2xl p-3 md:p-4 shadow-lg hover:shadow-xl transition-all">
+                    <div class="glass-effect border-2 ${hasTableData ? 'border-teal-200' : 'border-gray-200'} rounded-2xl p-3 md:p-4 shadow-lg hover:shadow-xl transition-all ${!hasTableData ? 'opacity-75' : ''}">
                         <div class="flex items-start gap-2 md:gap-3 mb-3">
                             <div class="text-xl md:text-2xl flex-shrink-0">${rankIcon}</div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-bold text-gray-800 text-sm md:text-base line-clamp-2">${video.title}</h3>
-                                ${video.matchedKey ? `<p class="text-xs text-gray-500 mt-1">📊 ${video.matchedKey}</p>` : '<p class="text-xs text-orange-500 mt-1">⚠️ 표 데이터 없음</p>'}
+                                ${matchInfo}
                             </div>
                         </div>
 
@@ -864,24 +598,31 @@
                     <div>
                         ${videos.map((video, index) => {
                             const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
-                            const changeColor = video.change === null ? 'text-gray-400' :
-                                               video.change > 0 ? 'text-emerald-700' : 
-                                               video.change < 0 ? 'text-red-700' : 'text-gray-700';
-                            const changeSign = video.change === null ? '' : video.change > 0 ? '+' : '';
                             
+                            // null 처리
                             const pm7Display = video.pm7 !== null ? video.pm7.toLocaleString() : '-';
                             const am7Display = video.am7 !== null ? video.am7.toLocaleString() : '-';
-                            const changeDisplay = video.change !== null ? `${changeSign}${video.change.toLocaleString()}` : '-';
+                            const changeDisplay = video.change !== null ? 
+                                (video.change > 0 ? '+' : '') + video.change.toLocaleString() : '-';
+                            
+                            const changeColor = video.change !== null ? 
+                                (video.change > 0 ? 'text-emerald-700' : video.change < 0 ? 'text-red-700' : 'text-gray-700') : 
+                                'text-gray-400';
+                            
+                            const hasTableData = video.change !== null;
                             
                             return `
-                                <div class="p-2 md:p-3 border-b border-teal-100 ${index < 3 && video.change !== null ? 'bg-teal-50/50' : 'bg-white/50'} hover:bg-teal-50 transition-all">
+                                <div class="p-2 md:p-3 border-b border-teal-100 ${hasTableData ? (index < 3 ? 'bg-teal-50/50' : 'bg-white/50') : 'bg-gray-50/50'} hover:bg-teal-50 transition-all">
                                     <div class="flex items-center gap-2 mb-2">
                                         <span class="text-base md:text-lg">${rankIcon}</span>
                                         <span class="text-gray-800 text-xs md:text-sm font-semibold flex-1 line-clamp-1">
                                             ${video.title}
                                         </span>
                                     </div>
-                                    ${video.matchedKey ? `<div class="text-xs text-gray-500 mb-2">📊 ${video.matchedKey}</div>` : '<div class="text-xs text-orange-500 mb-2">⚠️ 표 데이터 없음</div>'}
+                                    ${hasTableData ? 
+                                        `<div class="text-xs text-teal-600 mb-1 ml-7">📋 ${video.matchedKey}</div>` :
+                                        `<div class="text-xs text-orange-600 mb-1 ml-7">⚠️ 표 데이터 없음</div>`
+                                    }
                                     <div class="grid grid-cols-4 gap-2 text-xs">
                                         <div class="text-right">
                                             <div class="text-purple-600 mb-0.5 font-semibold">8일 PM7</div>
@@ -934,6 +675,35 @@
         // 수동 새로고침
         window.manualRefresh = async function() {
             await loadPlaylistData();
+        };
+
+        // Firebase 저장
+        window.saveToFirebase = async function() {
+            if (videosData.length === 0) {
+                alert('저장할 데이터가 없습니다. 먼저 새로고침 버튼을 클릭하세요.');
+                return;
+            }
+            
+            try {
+                const now = new Date();
+                
+                const dataToSave = {
+                    timestamp: now.toISOString(),
+                    videos: videosData
+                };
+                
+                await set(ref(database, 'overnight/snapshots/' + Date.now()), dataToSave);
+                await set(ref(database, 'overnight/latest'), dataToSave);
+                
+                updateStatus('✓ Firebase 저장 완료', 'text-emerald-600');
+                
+                setTimeout(() => {
+                    updateStatus('✓ 준비 완료', 'text-teal-600');
+                }, 2000);
+            } catch (error) {
+                console.error('Firebase 저장 오류:', error);
+                alert('Firebase 저장 실패: ' + error.message);
+            }
         };
 
         // 초기화
