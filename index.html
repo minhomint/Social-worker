@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Overnight JangMinHo Live </title>
+    <title>🎵 Overnight JangMinHo Live Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -105,7 +105,13 @@
                     <p class="text-xs text-gray-600 mb-3">Overnight JangMinHo</p>
                     
                     <!-- YouTube 플레이어 -->
-                    <div id="player-container" class="relative" style="padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; box-shadow: 0 10px 30px rgba(45, 212, 191, 0.3);">
+                    <div id="player-container" class="relative bg-gray-900 rounded-2xl overflow-hidden" style="padding-bottom: 56.25%; height: 0;">
+                        <div class="absolute inset-0 flex items-center justify-center text-white">
+                            <div class="text-center">
+                                <div class="pulse text-4xl mb-2">🎵</div>
+                                <p class="text-sm">플레이어 로딩 중...</p>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 플레이어 컨트롤 -->
@@ -123,7 +129,7 @@
                 <!-- 엑셀 데이터 관리 (관리자용) -->
                 <div class="glass-effect border-2 border-purple-300 rounded-2xl p-4 shadow-lg">
                     <h2 class="text-lg font-bold text-gray-800 mb-2">📊 데이터 관리 (관리자)</h2>
-                    <p class="text-xs text-gray-600 mb-3">PM7/AM7 조회수 엑셀 업로드</p>
+                    <p class="text-xs text-gray-600 mb-3">PM7/AM7 조회수 엑셀 관리</p>
                     
                     <!-- 엑셀 업로드 -->
                     <div class="file-upload-zone rounded-xl p-4 mb-3 text-center cursor-pointer" onclick="document.getElementById('excelFile').click()">
@@ -138,14 +144,16 @@
                     <div id="uploadStatus" class="text-xs text-center text-gray-500 mb-3">파일을 선택해주세요</div>
 
                     <!-- 현재 데이터 다운로드 -->
-                    <button onclick="downloadExcelTemplate()" class="w-full bg-gradient-to-r from-blue-400 to-indigo-400 text-white font-bold py-2 px-4 rounded-lg shadow hover:shadow-lg transition-all text-sm mb-2">
-                        📥 현재 데이터 다운로드
+                    <button onclick="downloadExcelTemplate()" class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all mb-2">
+                        📥 현재 데이터 엑셀로 저장
                     </button>
 
                     <!-- Firebase 저장 (비밀번호 필요) -->
-                    <button onclick="saveToFirebaseWithAuth()" class="w-full bg-gradient-to-r from-pink-400 to-rose-400 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">
+                    <button onclick="saveToFirebaseWithAuth()" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition-all">
                         🔒 Firebase 저장 (관리자)
                     </button>
+                    
+                    <p class="text-xs text-gray-500 mt-2 text-center">※ Firebase 저장은 관리자 비밀번호가 필요합니다</p>
                 </div>
             </div>
 
@@ -201,6 +209,36 @@
         let player = null;
         let playerReady = false;
 
+        // Firebase 키 이름 안전하게 변환 (Firebase는 . # $ / [ ] 문자 사용 불가)
+        function encodeFirebaseKey(key) {
+            return key
+                .replace(/\./g, '｡')  // . → ｡
+                .replace(/#/g, '＃')  // # → ＃
+                .replace(/\$/g, '＄')  // $ → ＄
+                .replace(/\//g, '／')  // / → ／
+                .replace(/\[/g, '［')  // [ → ［
+                .replace(/\]/g, '］'); // ] → ］
+        }
+
+        function decodeFirebaseKey(key) {
+            return key
+                .replace(/｡/g, '.')
+                .replace(/＃/g, '#')
+                .replace(/＄/g, '$')
+                .replace(/／/g, '/')
+                .replace(/［/g, '[')
+                .replace(/］/g, ']');
+        }
+
+        // 객체의 모든 키를 Firebase 안전 형식으로 변환
+        function encodeObjectKeys(obj) {
+            const encoded = {};
+            for (const [key, value] of Object.entries(obj)) {
+                encoded[encodeFirebaseKey(key)] = value;
+            }
+            return encoded;
+        }
+
         // 초기 고정 데이터 (11월 8일 PM7 / 11월 9일 AM7)
         let INITIAL_DATA = {
             '8PM7': {
@@ -255,7 +293,22 @@
         };
 
         function createPlayer() {
-            player = new YT.Player('player-container', {
+            const container = document.getElementById('player-container');
+            
+            // 기존 내용 제거
+            container.innerHTML = '';
+            
+            // iframe을 담을 div 생성
+            const playerDiv = document.createElement('div');
+            playerDiv.id = 'youtube-player';
+            playerDiv.style.position = 'absolute';
+            playerDiv.style.top = '0';
+            playerDiv.style.left = '0';
+            playerDiv.style.width = '100%';
+            playerDiv.style.height = '100%';
+            container.appendChild(playerDiv);
+            
+            player = new YT.Player('youtube-player', {
                 height: '100%',
                 width: '100%',
                 playerVars: {
@@ -282,13 +335,14 @@
 
         function onPlayerReady(event) {
             playerReady = true;
-            console.log('플레이어 준비 완료');
+            console.log('✅ 플레이어 준비 완료');
             
             // 자동 재생 시작
             try {
                 event.target.playVideo();
                 event.target.setLoop(true);
                 event.target.setShuffle(false);
+                console.log('✅ 자동 재생 시작');
             } catch (e) {
                 console.error('자동 재생 오류:', e);
             }
@@ -335,10 +389,33 @@
 
         function onPlayerError(event) {
             console.error('플레이어 오류:', event.data);
+            const container = document.getElementById('player-container');
+            const errorMessages = {
+                2: '잘못된 매개변수',
+                5: 'HTML5 플레이어 오류',
+                100: '영상을 찾을 수 없음',
+                101: '영상 소유자가 재생을 허용하지 않음',
+                150: '영상 소유자가 재생을 허용하지 않음'
+            };
+            
+            container.innerHTML = `
+                <div class="absolute inset-0 flex items-center justify-center text-white bg-red-900/80">
+                    <div class="text-center p-4">
+                        <div class="text-4xl mb-2">⚠️</div>
+                        <p class="text-sm font-bold mb-2">플레이어 오류 발생</p>
+                        <p class="text-xs">${errorMessages[event.data] || '알 수 없는 오류'}</p>
+                        <button onclick="restartPlayer()" class="mt-3 bg-white text-red-900 px-4 py-2 rounded-lg text-xs font-bold">
+                            재시도
+                        </button>
+                    </div>
+                </div>
+            `;
         }
 
         // 플레이어 재시작
         window.restartPlayer = function() {
+            console.log('플레이어 재시작 요청...');
+            
             if (player && playerReady) {
                 try {
                     player.loadPlaylist({
@@ -346,13 +423,18 @@
                         list: PLAYLIST_ID
                     });
                     player.playVideo();
-                    console.log('플레이어 재시작 완료');
+                    console.log('✅ 플레이어 재시작 완료');
+                    alert('✅ 플레이어가 재시작되었습니다.');
                 } catch (e) {
                     console.error('플레이어 재시작 오류:', e);
-                    player.destroy();
+                    console.log('플레이어 재생성 시도...');
+                    if (player && player.destroy) {
+                        player.destroy();
+                    }
                     setTimeout(createPlayer, 1000);
                 }
             } else {
+                console.log('플레이어 새로 생성...');
                 createPlayer();
             }
         };
@@ -364,10 +446,14 @@
                 if (isMuted) {
                     player.unMute();
                     isMuted = false;
+                    console.log('🔊 음소거 해제');
                 } else {
                     player.mute();
                     isMuted = true;
+                    console.log('🔇 음소거');
                 }
+            } else {
+                console.log('플레이어가 준비되지 않았습니다.');
             }
         };
 
@@ -411,7 +497,7 @@
                         INITIAL_DATA['9AM7'] = newData9AM7;
                         
                         statusDiv.textContent = `✅ ${Object.keys(newData8PM7).length}개 영상 데이터 업로드 완료!`;
-                        statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-semibold';
+                        statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
                         
                         // 자동으로 새로고침
                         setTimeout(() => {
@@ -440,21 +526,48 @@
 
         // 현재 데이터를 엑셀로 다운로드
         window.downloadExcelTemplate = function() {
-            const data = [['영상명', '8PM7', '9AM7', '증감']];
-            
-            for (const [title, pm7] of Object.entries(INITIAL_DATA['8PM7'])) {
-                const am7 = INITIAL_DATA['9AM7'][title] || 0;
-                const change = am7 - pm7;
-                data.push([title, pm7, am7, change]);
-            }
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.textContent = '엑셀 파일 생성 중...';
+            statusDiv.className = 'text-xs text-center text-blue-600 mb-3 font-semibold pulse';
 
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Overnight Data');
-            
-            const now = new Date();
-            const filename = `overnight_data_${now.getMonth()+1}${now.getDate()}_${now.getHours()}${now.getMinutes()}.xlsx`;
-            XLSX.writeFile(wb, filename);
+            try {
+                const data = [['영상명', '8PM7', '9AM7', '증감']];
+                
+                for (const [title, pm7] of Object.entries(INITIAL_DATA['8PM7'])) {
+                    const am7 = INITIAL_DATA['9AM7'][title] || 0;
+                    const change = am7 - pm7;
+                    data.push([title, pm7, am7, change]);
+                }
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                
+                // 열 너비 설정
+                ws['!cols'] = [
+                    {wch: 40},  // 영상명
+                    {wch: 12},  // 8PM7
+                    {wch: 12},  // 9AM7
+                    {wch: 12}   // 증감
+                ];
+                
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Overnight Data');
+                
+                const now = new Date();
+                const filename = `overnight_data_${now.getMonth()+1}월${now.getDate()}일_${now.getHours()}시${now.getMinutes()}분.xlsx`;
+                XLSX.writeFile(wb, filename);
+                
+                statusDiv.textContent = `✅ 엑셀 저장 완료! (${filename})`;
+                statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
+                
+                setTimeout(() => {
+                    statusDiv.textContent = '파일을 선택해주세요';
+                    statusDiv.className = 'text-xs text-center text-gray-500 mb-3';
+                }, 3000);
+            } catch (error) {
+                console.error('엑셀 저장 오류:', error);
+                statusDiv.textContent = '❌ 엑셀 저장 실패: ' + error.message;
+                statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
+            }
         };
 
         // Firebase 저장 (비밀번호 인증)
@@ -466,32 +579,64 @@
 
             // 비밀번호 확인
             const password = prompt('관리자 비밀번호를 입력하세요:');
+            if (!password) {
+                return; // 취소한 경우
+            }
+            
             if (password !== ADMIN_PASSWORD) {
                 alert('❌ 비밀번호가 올바르지 않습니다.');
                 return;
             }
 
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.textContent = 'Firebase 저장 중...';
+            statusDiv.className = 'text-xs text-center text-blue-600 mb-3 font-semibold pulse';
+
             try {
                 const now = new Date();
+                const timestamp = Date.now();
+                
+                // Firebase 안전한 키로 변환
+                const safeInitialData = {
+                    '8PM7': encodeObjectKeys(INITIAL_DATA['8PM7']),
+                    '9AM7': encodeObjectKeys(INITIAL_DATA['9AM7'])
+                };
                 
                 const dataToSave = {
                     timestamp: now.toISOString(),
+                    savedAt: `${now.getMonth()+1}월 ${now.getDate()}일 ${now.getHours()}시 ${now.getMinutes()}분`,
                     videos: videosData,
-                    initialData: INITIAL_DATA
+                    initialData: safeInitialData,
+                    totalVideos: videosData.length,
+                    totalChange: videosData.filter(v => v.change !== null).reduce((sum, v) => sum + v.change, 0)
                 };
                 
-                await set(ref(database, 'overnight/snapshots/' + Date.now()), dataToSave);
+                console.log('Firebase 저장 시작...', dataToSave);
+                
+                // 스냅샷 저장
+                await set(ref(database, 'overnight/snapshots/' + timestamp), dataToSave);
+                console.log('스냅샷 저장 완료');
+                
+                // 최신 데이터로 저장
                 await set(ref(database, 'overnight/latest'), dataToSave);
+                console.log('latest 저장 완료');
+                
+                statusDiv.textContent = `✅ Firebase 저장 완료! (${dataToSave.savedAt})`;
+                statusDiv.className = 'text-xs text-center text-emerald-600 mb-3 font-bold';
                 
                 updateStatus('✓ Firebase 저장 완료', 'text-emerald-600');
-                alert('✅ Firebase 저장이 완료되었습니다!');
+                alert(`✅ Firebase 저장 완료!\n\n시간: ${dataToSave.savedAt}\n영상 수: ${videosData.length}개\n총 증가: ${dataToSave.totalChange.toLocaleString()}`);
                 
                 setTimeout(() => {
-                    updateStatus('✓ 준비 완료', 'text-teal-600');
-                }, 2000);
+                    statusDiv.textContent = '파일을 선택해주세요';
+                    statusDiv.className = 'text-xs text-center text-gray-500 mb-3';
+                }, 5000);
+                
             } catch (error) {
                 console.error('Firebase 저장 오류:', error);
-                alert('❌ Firebase 저장 실패: ' + error.message);
+                statusDiv.textContent = '❌ Firebase 저장 실패: ' + error.message;
+                statusDiv.className = 'text-xs text-center text-red-600 mb-3 font-semibold';
+                alert('❌ Firebase 저장 실패:\n' + error.message + '\n\n콘솔(F12)을 확인해주세요.');
             }
         };
 
