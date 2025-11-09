@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎵 Overnight JangMinHo Live </title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -27,6 +28,12 @@
             0%, 100% { opacity: 1; }
             50% { opacity: .5; }
         }
+        .admin-panel {
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+        }
     </style>
 </head>
 <body class="min-h-screen">
@@ -46,10 +53,38 @@
                     </div>
                 </div>
                 
-                <!-- 새로고침 버튼 -->
-                <button onclick="manualRefresh()" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm md:text-base">
-                    🔄 새로고침
-                </button>
+                <!-- 관리자/새로고침 버튼 -->
+                <div class="flex gap-2">
+                    <button onclick="toggleAdminMode()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-2 px-3 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
+                        🔐 관리자
+                    </button>
+                    <button onclick="manualRefresh()" class="bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-2 px-3 md:px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm md:text-base">
+                        🔄 새로고침
+                    </button>
+                </div>
+            </div>
+
+            <!-- 관리자 패널 -->
+            <div id="adminPanel" class="admin-panel mb-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-300 rounded-xl">
+                <h3 class="text-sm font-bold text-purple-800 mb-2">🔐 관리자 모드</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <button onclick="goToYouTubePlaylist()" class="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
+                        ▶️ YouTube 재생목록 바로가기
+                    </button>
+                    <button onclick="downloadExcel()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
+                        📥 실시간 데이터 엑셀 다운로드
+                    </button>
+                    <button onclick="downloadFirebaseExcel()" class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm">
+                        💾 Firebase 데이터 엑셀 다운로드
+                    </button>
+                    <label class="bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-sm cursor-pointer text-center">
+                        📤 엑셀 파일 업로드 (고정 데이터 업데이트)
+                        <input type="file" id="fileUpload" accept=".xlsx,.xls" class="hidden" onchange="handleFileUpload(event)">
+                    </label>
+                </div>
+                <div class="mt-2 text-xs text-purple-600">
+                    ℹ️ 엑셀 업로드: "8PM7", "9AM7" 시트가 있는 파일만 가능합니다.
+                </div>
             </div>
 
             <!-- 뷰 모드 전환 -->
@@ -145,7 +180,7 @@
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         // Firebase 설정
         const firebaseConfig = {
@@ -163,6 +198,9 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
+        // 전역 변수로 export
+        window.firebaseDB = database;
+
         // YouTube API 설정
         const YOUTUBE_API_KEY = 'AIzaSyBuoonh-2xdqGo8nQfrTEQBeNDfoL-udfU';
         const PLAYLIST_ID = 'PLfuYGpnnSBu24ryeO51pagt62smucmmGv';
@@ -171,9 +209,10 @@
         let videosData = [];
         let player;
         let isMuted = false;
+        let isAdminMode = false;
 
         // 초기 고정 데이터 (11월 8일 PM7 / 11월 9일 AM7)
-        const INITIAL_DATA = {
+        let INITIAL_DATA = {
             '8PM7': {
                 '홀로된 사랑 (안무)': 60065,
                 '내게 남은 사랑을 드릴게요(OM)': 81065,
@@ -218,6 +257,244 @@
                 '잊으리오': 338705,
                 '내 이름 아시죠': 8898779
             }
+        };
+
+        // 전역으로 export
+        window.videosData = videosData;
+        window.INITIAL_DATA = INITIAL_DATA;
+
+        // 관리자 모드 토글
+        window.toggleAdminMode = function() {
+            if (!isAdminMode) {
+                const password = prompt('관리자 비밀번호를 입력하세요:');
+                if (password === '@minho0728') {
+                    isAdminMode = true;
+                    document.getElementById('adminPanel').classList.add('active');
+                    updateStatus('✓ 관리자 모드 활성화', 'text-purple-600');
+                } else if (password !== null) {
+                    alert('비밀번호가 올바르지 않습니다.');
+                }
+            } else {
+                isAdminMode = false;
+                document.getElementById('adminPanel').classList.remove('active');
+                updateStatus('✓ 관리자 모드 비활성화', 'text-gray-600');
+            }
+        };
+
+        // YouTube 재생목록 바로가기
+        window.goToYouTubePlaylist = function() {
+            window.open(`https://www.youtube.com/playlist?list=${PLAYLIST_ID}`, '_blank');
+        };
+
+        // 실시간 데이터 엑셀 다운로드
+        window.downloadExcel = function() {
+            if (window.videosData.length === 0) {
+                alert('다운로드할 데이터가 없습니다. 먼저 새로고침 버튼을 클릭하세요.');
+                return;
+            }
+
+            try {
+                // 엑셀 데이터 준비
+                const excelData = window.videosData.map((video, index) => ({
+                    '순위': index + 1,
+                    '영상 제목': video.title,
+                    '8일 PM7': video.pm7 !== null ? video.pm7 : '-',
+                    '9일 AM7': video.am7 !== null ? video.am7 : '-',
+                    '증감': video.change !== null ? video.change : '-',
+                    '실시간 조회수': video.realtime,
+                    '매칭 제목': video.matchedKey || '-',
+                    'Video ID': video.videoId,
+                    '업데이트 시간': new Date(video.timestamp).toLocaleString('ko-KR')
+                }));
+
+                // 워크북 생성
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // 컬럼 너비 설정
+                ws['!cols'] = [
+                    { wch: 8 },   // 순위
+                    { wch: 40 },  // 영상 제목
+                    { wch: 12 },  // 8일 PM7
+                    { wch: 12 },  // 9일 AM7
+                    { wch: 12 },  // 증감
+                    { wch: 15 },  // 실시간 조회수
+                    { wch: 30 },  // 매칭 제목
+                    { wch: 15 },  // Video ID
+                    { wch: 20 }   // 업데이트 시간
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, '조회수 데이터');
+
+                // 파일 다운로드
+                const now = new Date();
+                const filename = `Overnight_Live_${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}.xlsx`;
+                
+                XLSX.writeFile(wb, filename);
+                
+                updateStatus('✓ 엑셀 다운로드 완료', 'text-emerald-600');
+                setTimeout(() => {
+                    updateStatus('✓ 준비 완료', 'text-teal-600');
+                }, 2000);
+            } catch (error) {
+                console.error('엑셀 다운로드 오류:', error);
+                alert('엑셀 다운로드 실패: ' + error.message);
+            }
+        };
+
+        // Firebase 데이터 엑셀 다운로드
+        window.downloadFirebaseExcel = async function() {
+            try {
+                updateStatus('Firebase 데이터 로딩 중...', 'text-blue-600 pulse');
+
+                const latestRef = ref(window.firebaseDB, 'overnight/latest');
+                const snapshot = await get(latestRef);
+                
+                if (!snapshot.exists()) {
+                    alert('Firebase에 저장된 데이터가 없습니다.');
+                    updateStatus('❌ Firebase 데이터 없음', 'text-red-600');
+                    return;
+                }
+
+                const data = snapshot.val();
+                
+                if (!data.videos || data.videos.length === 0) {
+                    alert('Firebase에 비디오 데이터가 없습니다.');
+                    return;
+                }
+
+                // 엑셀 데이터 준비
+                const excelData = data.videos.map((video, index) => ({
+                    '순위': index + 1,
+                    '영상 제목': video.title,
+                    '8일 PM7': video.pm7 !== null ? video.pm7 : '-',
+                    '9일 AM7': video.am7 !== null ? video.am7 : '-',
+                    '증감': video.change !== null ? video.change : '-',
+                    '실시간 조회수': video.realtime,
+                    '매칭 제목': video.matchedKey || '-',
+                    'Video ID': video.videoId,
+                    '저장 시간': new Date(data.timestamp).toLocaleString('ko-KR')
+                }));
+
+                // 워크북 생성
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // 컬럼 너비 설정
+                ws['!cols'] = [
+                    { wch: 8 },   // 순위
+                    { wch: 40 },  // 영상 제목
+                    { wch: 12 },  // 8일 PM7
+                    { wch: 12 },  // 9일 AM7
+                    { wch: 12 },  // 증감
+                    { wch: 15 },  // 실시간 조회수
+                    { wch: 30 },  // 매칭 제목
+                    { wch: 15 },  // Video ID
+                    { wch: 20 }   // 저장 시간
+                ];
+
+                XLSX.utils.book_append_sheet(wb, ws, 'Firebase 데이터');
+
+                // 파일 다운로드
+                const saveTime = new Date(data.timestamp);
+                const filename = `Firebase_Overnight_${saveTime.getFullYear()}${String(saveTime.getMonth()+1).padStart(2,'0')}${String(saveTime.getDate()).padStart(2,'0')}_${String(saveTime.getHours()).padStart(2,'0')}${String(saveTime.getMinutes()).padStart(2,'0')}.xlsx`;
+                
+                XLSX.writeFile(wb, filename);
+                
+                updateStatus('✓ Firebase 엑셀 다운로드 완료', 'text-emerald-600');
+                setTimeout(() => {
+                    updateStatus('✓ 준비 완료', 'text-teal-600');
+                }, 2000);
+            } catch (error) {
+                console.error('Firebase 엑셀 다운로드 오류:', error);
+                alert('Firebase 엑셀 다운로드 실패: ' + error.message);
+                updateStatus('❌ 다운로드 실패', 'text-red-600');
+            }
+        };
+
+        // 엑셀 파일 업로드 처리
+        window.handleFileUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    updateStatus('엑셀 파일 처리 중...', 'text-blue-600 pulse');
+
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // 8PM7, 9AM7 시트 확인
+                    if (!workbook.SheetNames.includes('8PM7') || !workbook.SheetNames.includes('9AM7')) {
+                        alert('엑셀 파일에 "8PM7"과 "9AM7" 시트가 필요합니다.');
+                        updateStatus('❌ 업로드 실패', 'text-red-600');
+                        return;
+                    }
+
+                    // 시트 데이터 읽기
+                    const sheet8PM7 = workbook.Sheets['8PM7'];
+                    const sheet9AM7 = workbook.Sheets['9AM7'];
+
+                    const data8PM7 = XLSX.utils.sheet_to_json(sheet8PM7, { header: 1 });
+                    const data9AM7 = XLSX.utils.sheet_to_json(sheet9AM7, { header: 1 });
+
+                    // 새로운 고정 데이터 생성
+                    const new8PM7 = {};
+                    const new9AM7 = {};
+
+                    // 첫 행은 헤더로 스킵
+                    for (let i = 1; i < data8PM7.length; i++) {
+                        const row = data8PM7[i];
+                        if (row[0] && row[1]) {  // 제목과 조회수가 있으면
+                            new8PM7[row[0]] = parseInt(row[1]) || 0;
+                        }
+                    }
+
+                    for (let i = 1; i < data9AM7.length; i++) {
+                        const row = data9AM7[i];
+                        if (row[0] && row[1]) {
+                            new9AM7[row[0]] = parseInt(row[1]) || 0;
+                        }
+                    }
+
+                    // 데이터 개수 확인
+                    const count8 = Object.keys(new8PM7).length;
+                    const count9 = Object.keys(new9AM7).length;
+
+                    if (count8 === 0 || count9 === 0) {
+                        alert('엑셀 파일에서 유효한 데이터를 찾을 수 없습니다.\n형식: 첫 열=제목, 둘째 열=조회수');
+                        updateStatus('❌ 업로드 실패', 'text-red-600');
+                        return;
+                    }
+
+                    // 확인 메시지
+                    if (confirm(`8PM7: ${count8}개, 9AM7: ${count9}개 데이터를 업로드하시겠습니까?`)) {
+                        window.INITIAL_DATA = {
+                            '8PM7': new8PM7,
+                            '9AM7': new9AM7
+                        };
+
+                        updateStatus('✓ 고정 데이터 업데이트 완료', 'text-emerald-600');
+                        
+                        // 데이터 다시 로드
+                        setTimeout(async () => {
+                            await loadPlaylistData();
+                        }, 1000);
+                    }
+
+                    // 파일 입력 초기화
+                    event.target.value = '';
+                    
+                } catch (error) {
+                    console.error('엑셀 파일 처리 오류:', error);
+                    alert('엑셀 파일 처리 실패: ' + error.message);
+                    updateStatus('❌ 업로드 실패', 'text-red-600');
+                }
+            };
+
+            reader.readAsArrayBuffer(file);
         };
 
         // YouTube Player 초기화
@@ -447,7 +724,7 @@
             const videoStats = await fetchVideoStats(videoIds);
             
             if (videoStats.length > 0) {
-                videosData = videoStats.map(item => {
+                window.videosData = videoStats.map(item => {
                     const videoId = item.id;
                     const title = item.snippet.title;
                     const realtime = parseInt(item.statistics.viewCount);
@@ -459,11 +736,11 @@
                     
                     const normalizedTitle = normalizeTitle(title);
                     
-                    for (const [key, value] of Object.entries(INITIAL_DATA['8PM7'])) {
+                    for (const [key, value] of Object.entries(window.INITIAL_DATA['8PM7'])) {
                         const normalizedKey = normalizeTitle(key);
                         if (normalizedTitle.includes(normalizedKey) || normalizedKey.includes(normalizedTitle)) {
                             pm7 = value;
-                            am7 = INITIAL_DATA['9AM7'][key];
+                            am7 = window.INITIAL_DATA['9AM7'][key];
                             matchedKey = key;
                             break;
                         }
@@ -485,7 +762,7 @@
                 });
                 
                 // 정렬: 증감이 있는 영상 우선, 그 다음 실시간 조회수
-                videosData.sort((a, b) => {
+                window.videosData.sort((a, b) => {
                     if (a.change !== null && b.change === null) return -1;
                     if (a.change === null && b.change !== null) return 1;
                     if (a.change !== null && b.change !== null) return b.change - a.change;
@@ -493,10 +770,10 @@
                 });
                 
                 // 영상 수 업데이트
-                document.getElementById('videoCount').textContent = videosData.length;
+                document.getElementById('videoCount').textContent = window.videosData.length;
                 
                 // 총 증가량 계산 (null 제외)
-                const totalChange = videosData
+                const totalChange = window.videosData
                     .filter(v => v.change !== null)
                     .reduce((sum, v) => sum + v.change, 0);
                 document.getElementById('totalChange').textContent = totalChange.toLocaleString();
@@ -513,9 +790,9 @@
         // 뷰 렌더링
         function renderView() {
             if (currentViewMode === 'card') {
-                renderCardView(videosData);
+                renderCardView(window.videosData);
             } else {
-                renderTableView(videosData);
+                renderTableView(window.videosData);
             }
         }
 
@@ -667,7 +944,7 @@
                 tableBtn.className = 'flex-1 py-2 px-3 rounded-lg font-semibold text-sm transition-all bg-gradient-to-r from-teal-400 to-cyan-400 text-white shadow-lg';
             }
             
-            if (videosData.length > 0) {
+            if (window.videosData.length > 0) {
                 renderView();
             }
         };
@@ -679,21 +956,23 @@
 
         // Firebase 저장
         window.saveToFirebase = async function() {
-            if (videosData.length === 0) {
+            if (window.videosData.length === 0) {
                 alert('저장할 데이터가 없습니다. 먼저 새로고침 버튼을 클릭하세요.');
                 return;
             }
             
             try {
+                updateStatus('Firebase 저장 중...', 'text-blue-600 pulse');
+                
                 const now = new Date();
                 
                 const dataToSave = {
                     timestamp: now.toISOString(),
-                    videos: videosData
+                    videos: window.videosData
                 };
                 
-                await set(ref(database, 'overnight/snapshots/' + Date.now()), dataToSave);
-                await set(ref(database, 'overnight/latest'), dataToSave);
+                await set(ref(window.firebaseDB, 'overnight/snapshots/' + Date.now()), dataToSave);
+                await set(ref(window.firebaseDB, 'overnight/latest'), dataToSave);
                 
                 updateStatus('✓ Firebase 저장 완료', 'text-emerald-600');
                 
@@ -703,6 +982,7 @@
             } catch (error) {
                 console.error('Firebase 저장 오류:', error);
                 alert('Firebase 저장 실패: ' + error.message);
+                updateStatus('❌ 저장 실패', 'text-red-600');
             }
         };
 
